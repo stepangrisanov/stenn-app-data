@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+    <PropertyGroup Condition="'$(AddCommonPackageIcon)'=='' And '$(MSBuildProjectFile.StartsWith('Stenn.'))'=='True'">
+        <AddCommonPackageIcon>True</AddCommonPackageIcon>
+    </PropertyGroup>
+    
+    <Import Condition="'$(AddCommonPackageIcon)'=='True'" Project="$(MSBuildThisFileDirectory)\common.package.targets" />
+    
+</Project>
