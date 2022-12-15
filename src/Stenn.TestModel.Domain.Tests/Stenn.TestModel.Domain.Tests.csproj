@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Stenn.Shared.Csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stenn.AppData.Mock\Stenn.AppData.Mock.csproj" />
+    <ProjectReference Include="..\Stenn.AppData\Stenn.AppData.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Entities\Declarations\CountryDeclaration.csv" />
+    <EmbeddedResource Include="Entities\Declarations\CountryStatesDeclaration.csv" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Mock for Data App Services using in-memory DB</Description>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stenn.AppData.EntityFrameworkCore\Stenn.AppData.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Stenn.AppData\Stenn.AppData.csproj" />
+    <ProjectReference Include="..\Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

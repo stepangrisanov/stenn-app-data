@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <!-- Specific package version can be found in csproj files -->
+    <TwoDigitVersion Condition="'$(TwoDigitVersion)'==''">7.0</TwoDigitVersion>
+    <PatchNum Condition="'$(PatchNum)'==''">0</PatchNum>
+
+    <!-- special postfix will be added to patch num if defined -->
+    <PatchNumSuffix Condition="'$(PatchNumSuffix)'=='' And '$(Configuration)'!='Release'">debug</PatchNumSuffix>
+    <BuildNum Condition="'$(BuildNum)'==''">0</BuildNum>
+  </PropertyGroup>
+</Project>

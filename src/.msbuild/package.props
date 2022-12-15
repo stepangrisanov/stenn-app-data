@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl>https://github.com/StennGroup/stenn-entityframework-core/blob/logo/icon.png</PackageIconUrl>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <ErrorReportUrl>https://github.com/StennGroup/stenn-entityframework-core/issues</ErrorReportUrl>
+    <PackageProjectUrl>https://github.com/StennGroup/stenn-entityframework-core</PackageProjectUrl>
+    <PackageTags>Microsoft EntityFrameworkCore SqlServer</PackageTags>
+  </PropertyGroup>
+
+
+  <!--Packages details-->
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="..\..\logo\icon.png" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>

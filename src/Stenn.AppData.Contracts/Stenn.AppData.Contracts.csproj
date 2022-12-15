@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Contracts for App Data Services</Description>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="build\*.*" PackagePath="build\" Pack="true" />
+    <None Include="buildMultiTargeting\*.*" PackagePath="buildMultiTargeting\" Pack="true" />
+  </ItemGroup>
+
+</Project>
