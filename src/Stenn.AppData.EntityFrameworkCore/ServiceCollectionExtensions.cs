@@ -27,10 +27,9 @@ namespace Stenn.AppData.EntityFrameworkCore
             {
                 throw new ArgumentNullException(nameof(initDbContext));
             }
+
             services.AddDbContext<TDbContext>(initDbContext);
-            
-            return Stenn.AppData.AppDataServiceCollectionExtensions
-                .AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(services, initProjections);
+            return services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(initProjections);
         }
     }
 }

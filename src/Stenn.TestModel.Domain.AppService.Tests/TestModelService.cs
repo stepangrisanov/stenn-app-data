@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Stenn.AppData;
-using Stenn.TestModel.Domain.AppService.Tests.Entities;
 
 namespace Stenn.TestModel.Domain.AppService.Tests
 {

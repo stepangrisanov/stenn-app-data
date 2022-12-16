@@ -3,7 +3,6 @@ namespace Stenn.TestModel.Domain.AppService.Tests.Entities
     /// <summary>
     /// US country state
     /// </summary>
-    //[DynamicallyAccessedMembers(NonPublicConstructors | PublicProperties)]
     public class TestModelCountryState : ITestModelEntity
     {
         protected TestModelCountryState()

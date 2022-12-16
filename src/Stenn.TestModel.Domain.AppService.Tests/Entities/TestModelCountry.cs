@@ -1,6 +1,5 @@
 namespace Stenn.TestModel.Domain.AppService.Tests.Entities
 {
-    //[DynamicallyAccessedMembers(NonPublicConstructors | PublicProperties)]
     public class TestModelCountry : ITestModelEntity
     {
         /// <summary>

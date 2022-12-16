@@ -1,5 +1,4 @@
 using Stenn.AppData.Contracts;
-using Stenn.TestModel.Domain.AppService.Tests.Entities;
 
 namespace Stenn.TestModel.Domain.AppService.Tests
 {

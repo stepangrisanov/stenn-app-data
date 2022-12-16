@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Stenn.AppData;
-using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using Stenn.TestModel.Domain.AppService.Tests.Internals;
 
 namespace Stenn.TestModel.Domain.AppService.Tests

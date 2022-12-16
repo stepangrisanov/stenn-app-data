@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Stenn.AppData.Mock;
 using Stenn.TestModel.Domain.AppService.Tests;
-using Stenn.TestModel.Domain.AppService.Tests.DependencyInjection;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
 
 namespace Stenn.AppData.Tests
@@ -57,6 +56,18 @@ namespace Stenn.AppData.Tests
 
             // related entity should be filled
             states.First().Country.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task MockedDataServiceShouldReturnProjectionTestData()
+        {
+            // data service should return one CountryState entity - the on filled inside InitEntities()
+            var countries = await TestModelDataService.Query<TestModelCountryStateView>().Where(i => i.Id == "CL").ToListAsync();
+            countries.Count.Should().Be(1);
+
+            // data service should return one CountryState entity - the on filled inside InitEntities()
+            var constant = await TestModelDataService.Query<TestModelConstantView>().ToListAsync();
+            constant.Count.Should().Be(1);
         }
 
         [Test]

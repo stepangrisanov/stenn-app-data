@@ -6,13 +6,20 @@ namespace Stenn.AppData
 {
     public static class AppDataServiceCollectionExtensions
     {
-        public static IServiceCollection AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(IServiceCollection services,
-            Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null)
+        public static IServiceCollection AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(this IServiceCollection services,
+            Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
+            Action<IServiceProvider>? beforeCreate=null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
         {
-            services.AddScoped<TServiceContract, TServiceImplementation>();
+            services.AddScoped<TServiceImplementation>();
+            services.AddScoped<TServiceContract>(provider =>
+            {
+                beforeCreate?.Invoke(provider);
+                return provider.GetRequiredService<TServiceImplementation>();
+            });
+            
             if (initProjections != null)
             {
                 var appServiceBuilder = new AppDataServiceBuilder<TBaseEntity>(services);

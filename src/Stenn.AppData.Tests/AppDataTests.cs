@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Stenn.TestModel.Domain.AppService.Tests;
-using Stenn.TestModel.Domain.AppService.Tests.DependencyInjection;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using Stenn.TestModel.Domain.Tests.Entities.Declarations;
 using Stenn.EntityFrameworkCore.Testing;

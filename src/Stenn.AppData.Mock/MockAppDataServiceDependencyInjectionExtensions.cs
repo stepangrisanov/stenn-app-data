@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
+using Stenn.AppData.EntityFrameworkCore;
 
 namespace Stenn.AppData.Mock
 {
@@ -13,20 +14,29 @@ namespace Stenn.AppData.Mock
         /// </summary>
         /// <param name="services"></param>
         /// <param name="entitiesInit"></param>
+        /// <param name="initProjections"></param>
         /// <param name="queryTrackingBehavior"></param>
         /// <returns></returns>
         public static IServiceCollection AddMockAppDataService<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
             Action<MockAppDataServiceBuilder<TBaseEntity>> entitiesInit,
+            Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
             QueryTrackingBehavior queryTrackingBehavior = QueryTrackingBehavior.NoTracking)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
             where TDbContext : AppDataServiceDbContext<TBaseEntity>
         {
-            services.AddMockAppDataDbContext<TBaseEntity, TDbContext>(entitiesInit, queryTrackingBehavior);
+            services.RemoveDbContext<TBaseEntity, TDbContext>();
 
-            services.AddScoped<TServiceImplementation>();
+            services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>((_, builder) =>
+                {
+                    builder.UseInMemoryDatabase(typeof(TDbContext).Name);
+                    builder.UseQueryTrackingBehavior(queryTrackingBehavior);
+                    builder.UseMockServiceBuilder(entitiesInit);
+                },
+                initProjections);
+            
             services.AddScoped<TServiceContract>(p =>
             {
                 var dbContext = p.GetRequiredService<TDbContext>();
@@ -34,25 +44,6 @@ namespace Stenn.AppData.Mock
                 dbContext.Database.EnsureCreated();
 
                 return p.GetRequiredService<TServiceImplementation>();
-            });
-
-            return services;
-        }
-
-        private static IServiceCollection AddMockAppDataDbContext<TBaseEntity, TDbContext>(this IServiceCollection services,
-            Action<MockAppDataServiceBuilder<TBaseEntity>> entitiesInit,
-            QueryTrackingBehavior queryTrackingBehavior = QueryTrackingBehavior.NoTracking)
-            where TBaseEntity : class, IAppDataEntity
-            where TDbContext : AppDataServiceDbContext<TBaseEntity>
-        {
-            services.RemoveDbContext<TBaseEntity, TDbContext>();
-
-            // Idea: Use EF Core extension. Put entitiesInit as ef extension option and use it in DbContext.OnModelCreating for fill entity via HasData
-            services.AddDbContext<TDbContext>(builder =>
-            {
-                builder.UseInMemoryDatabase(typeof(TDbContext).Name);
-                builder.UseQueryTrackingBehavior(queryTrackingBehavior);
-                builder.UseMockServiceBuilder(entitiesInit);
             });
 
             return services;
