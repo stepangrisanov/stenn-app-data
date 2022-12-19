@@ -28,8 +28,15 @@ namespace Stenn.AppData.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(initDbContext));
             }
 
-            services.AddDbContext<TDbContext>(initDbContext);
+            services.AddDbContext<TDbContext>((p, b) => InitDbContext(p, b, initDbContext));
             return services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(initProjections);
+        }
+
+        private static void InitDbContext(IServiceProvider provider, DbContextOptionsBuilder builder,
+            Action<IServiceProvider, DbContextOptionsBuilder>? initDbContext)
+        {
+            builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            initDbContext?.Invoke(provider, builder);
         }
     }
 }
