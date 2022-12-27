@@ -19,9 +19,7 @@ namespace Stenn.AppData.Tests
     [TestFixture]
     public class AppDataTests
     {
-#if NET5_0
-        protected const string DBName = "test-appdata-service_net5";
-#elif NET6_0
+#if NET6_0
         protected const string DBName = "test-appdata-service_net6";
 #elif NET7_0
         protected const string DBName = "test-appdata-service_net7";

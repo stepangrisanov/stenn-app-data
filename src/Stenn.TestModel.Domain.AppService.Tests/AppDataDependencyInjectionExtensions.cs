@@ -19,7 +19,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         public static IServiceCollection AddTestModelAppDataService(this IServiceCollection services, string connectionString)
         {
             services.AddAppDataServiceSqlServer<ITestModelEntity, ITestModelDataService,
-                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitPojections);
+                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitProjections);
 
             return services;
         }
@@ -37,7 +37,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests
             QueryTrackingBehavior queryTrackingBehavior)
         {
             services.AddMockAppDataService<ITestModelEntity, ITestModelDataService,
-                TestModelDataService, TestModelAppDataServiceDbContext>(entitiesInit, InitPojections, queryTrackingBehavior);
+                TestModelDataService, TestModelAppDataServiceDbContext>(entitiesInit, InitProjections, queryTrackingBehavior);
 
             return services;
         }
@@ -46,7 +46,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         /// Projections' registrations
         /// </summary>
         /// <param name="builder"></param>
-        private static void InitPojections(AppDataServiceBuilder<ITestModelEntity> builder)
+        private static void InitProjections(AppDataServiceBuilder<ITestModelEntity> builder)
         {
             builder.AddProjection<TestModelConstantViewDataProjection>();
             builder.AddProjection<TestModelCountryStateViewDataProjection>();
