@@ -5,7 +5,7 @@
 
     <PropertyGroup>
         <StennSharedVersion>7.0.3</StennSharedVersion>
-        <StennEntityFrameworkCoreVersion>7.8.46</StennEntityFrameworkCoreVersion>
+        <StennEntityFrameworkCoreVersion>7.8.48</StennEntityFrameworkCoreVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(IsNET6)'=='True'">
