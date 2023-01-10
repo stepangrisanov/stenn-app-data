@@ -2,7 +2,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests.Entities
 {
     public class TestModelCountryStateView : ITestModelEntity
     {
-        public string Id { get; set; }
+        public string StateId { get; set; }
         public string Description { get; set; }
         
         public string CountryName { get; set; }

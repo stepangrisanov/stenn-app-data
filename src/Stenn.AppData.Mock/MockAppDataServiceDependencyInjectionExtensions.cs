@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
@@ -29,13 +31,27 @@ namespace Stenn.AppData.Mock
         {
             services.RemoveDbContext<TBaseEntity, TDbContext>();
 
+            var projections = services.Where(r => r.ServiceType == typeof(IAppDataProjection<TBaseEntity>)).ToArray();
+            foreach (var projection in projections)
+            {
+                services.Remove(projection);
+            }
+
+            if (initProjections != null)
+            {
+                var appServiceBuilder = new MockProjectionsAppDataServiceBuilder<TBaseEntity>(services);
+                initProjections(appServiceBuilder);
+                entitiesInit(new MockProjectionValuesAppDataServiceBuilder<TBaseEntity>(appServiceBuilder.MockProjections));
+            }
+            
             services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>((_, builder) =>
-                {
-                    builder.UseInMemoryDatabase(typeof(TDbContext).Name);
-                    builder.UseQueryTrackingBehavior(queryTrackingBehavior);
-                    builder.UseMockServiceBuilder(entitiesInit);
-                },
-                initProjections);
+            {
+                builder.UseInMemoryDatabase(typeof(TDbContext).Name);
+                builder.UseQueryTrackingBehavior(queryTrackingBehavior);
+                builder.UseMockServiceBuilder(entitiesInit);
+            });
+            
+            
             
             services.AddScoped<TServiceContract>(p =>
             {
@@ -49,7 +65,7 @@ namespace Stenn.AppData.Mock
             return services;
         }
 
-        private static IServiceCollection RemoveDbContext<TBaseEntity, TDbContext>(this IServiceCollection services)
+        private static void RemoveDbContext<TBaseEntity, TDbContext>(this IServiceCollection services)
             where TBaseEntity : class, IAppDataEntity
             where TDbContext : AppDataServiceDbContext<TBaseEntity>
         {
@@ -64,8 +80,6 @@ namespace Stenn.AppData.Mock
                     services.Remove(option);
                 }
             }
-
-            return services;
         }
     }
 }

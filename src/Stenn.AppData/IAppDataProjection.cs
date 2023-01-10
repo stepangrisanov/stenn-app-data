@@ -10,6 +10,7 @@ namespace Stenn.AppData
     /// <typeparam name="TBaseEntity"></typeparam>
     public interface IAppDataProjection<out T, out TBaseEntity> : IAppDataProjection<TBaseEntity>
         where T : class, TBaseEntity
+        where TBaseEntity : class
     {
         /// <inheritdoc />
         Type IAppDataProjection<TBaseEntity>.GetEntityType()
@@ -32,6 +33,7 @@ namespace Stenn.AppData
     }
 
     public interface IAppDataProjection<out TBaseEntity>
+        where TBaseEntity : class
     {
         Type GetEntityType();
 

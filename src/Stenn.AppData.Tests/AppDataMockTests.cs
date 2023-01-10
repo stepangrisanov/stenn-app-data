@@ -17,16 +17,24 @@ namespace Stenn.AppData.Tests
     [TestFixture]
     internal class AppDataMockTests
     {
-        private ITestModelDataService TestModelDataService { get; set; }
+        private ITestModelDataService AppDataService { get; set; }
         private IServiceProvider ServiceProvider { get; set; }
 
         private static readonly TestModelCountry CountryNarnia = new("NN", "Narnia", "NRN", "555");
         private static readonly TestModelCountryState CountryState = new("CL", "Calormen", true, "NN");
 
+        private static readonly TestModelCountryStateView CountryStateView = new()
+            { StateId = "SV", CountryName = "Narnia", CountryAlpha2Code = "NN", CountryAlpha3Code = "NRN", CountryNumeric3Code = "555" };
+        
+        private static readonly TestModelConstantView ConstantView = new()
+            { ConstId =  "CNST" };
+        
         private static void InitEntities(MockAppDataServiceBuilder<ITestModelEntity> mockBuilder)
         {
             mockBuilder.Add(CountryNarnia);
             mockBuilder.Add(CountryState);
+            mockBuilder.Add(CountryStateView);
+            mockBuilder.Add(ConstantView);
         }
 
         [OneTimeSetUp]
@@ -36,18 +44,18 @@ namespace Stenn.AppData.Tests
             services.AddMockTestModelAppDataService(InitEntities, QueryTrackingBehavior.NoTracking);
 
             ServiceProvider = services.BuildServiceProvider();
-            TestModelDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
+            AppDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
         }
 
         [Test]
         public async Task MockedDataServiceShouldReturnTestData()
         {
             // data service should return one Country entity - the on filled inside InitEntities()
-            var countries = await TestModelDataService.Query<TestModelCountry>().Where(i => i.Id == "NN").ToListAsync();
+            var countries = await AppDataService.Query<TestModelCountry>().Where(i => i.Id == "NN").ToListAsync();
             countries.Count.Should().Be(1);
 
             // data service should return one CountryState entity - the on filled inside InitEntities()
-            var states = await TestModelDataService
+            var states = await AppDataService
                 .Query<TestModelCountryState>()
                 .Where(i => i.CountryId == "NN")
                 .Include(countryState => countryState.Country)
@@ -62,11 +70,11 @@ namespace Stenn.AppData.Tests
         public async Task MockedDataServiceShouldReturnProjectionTestData()
         {
             // data service should return one CountryState entity - the on filled inside InitEntities()
-            var countries = await TestModelDataService.Query<TestModelCountryStateView>().Where(i => i.Id == "CL").ToListAsync();
+            var countries = await AppDataService.Query<TestModelCountryStateView>().Where(i => i.StateId == "SV").ToListAsync();
             countries.Count.Should().Be(1);
 
             // data service should return one CountryState entity - the on filled inside InitEntities()
-            var constant = await TestModelDataService.Query<TestModelConstantView>().ToListAsync();
+            var constant = await AppDataService.Query<TestModelConstantView>().ToListAsync();
             constant.Count.Should().Be(1);
         }
 

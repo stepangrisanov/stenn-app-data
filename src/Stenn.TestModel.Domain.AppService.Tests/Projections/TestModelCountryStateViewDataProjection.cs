@@ -16,7 +16,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests.Projections
         {
             return DBContext.Set<TestModelCountryState>().Select(s => new TestModelCountryStateView
             {
-                Id = s.Id,
+                StateId = s.Id,
                 Description = s.Description,
                 CountryName = s.Country.Name,
                 CountryAlpha3Code = s.Country.Alpha3Code,

@@ -7,9 +7,9 @@ namespace Stenn.AppData.Mock
 {
     public static class EntityFrameworkCoreExtensions
     {
-        public static DbContextOptionsBuilder UseMockServiceBuilder<TBaseEntity>(this DbContextOptionsBuilder optionsBuilder,
+        internal static DbContextOptionsBuilder UseMockServiceBuilder<TBaseEntity>(this DbContextOptionsBuilder optionsBuilder,
             Action<MockAppDataServiceBuilder<TBaseEntity>> entitiesInit)
-            where TBaseEntity : IAppDataEntity
+            where TBaseEntity : class, IAppDataEntity
         {
             if (optionsBuilder == null)
             {
@@ -29,7 +29,9 @@ namespace Stenn.AppData.Mock
                 throw new InvalidOperationException("Mock service builder is already registered");
             }
 
-            extension = new MockServiceBuilderOptionsExtension<TBaseEntity>(builder => entitiesInit(new MockAppDataServiceBuilder<TBaseEntity>(builder)));
+            extension = new MockServiceBuilderOptionsExtension<TBaseEntity>(
+                builder => entitiesInit(new MockEntityValuesAppDataServiceBuilder<TBaseEntity>(builder)));
+            
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
 
             return optionsBuilder;

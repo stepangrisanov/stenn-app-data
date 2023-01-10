@@ -18,7 +18,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests.Projections
             {
                 new()
                 {
-                    Id = ConstantValue
+                    ConstId = ConstantValue
                 }
             }.AsQueryableFixed();
         }

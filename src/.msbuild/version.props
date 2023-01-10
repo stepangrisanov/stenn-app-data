@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- Specific package version can be found in csproj files -->
     <TwoDigitVersion Condition="'$(TwoDigitVersion)'==''">7.0</TwoDigitVersion>
-    <PatchNum Condition="'$(PatchNum)'==''">2</PatchNum>
+    <PatchNum Condition="'$(PatchNum)'==''">3</PatchNum>
 
     <!-- special postfix will be added to patch num if defined -->
     <PatchNumSuffix Condition="'$(PatchNumSuffix)'=='' And '$(Configuration)'!='Release'">debug</PatchNumSuffix>

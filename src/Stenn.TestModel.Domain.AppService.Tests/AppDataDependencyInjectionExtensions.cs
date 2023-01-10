@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData;
 using Stenn.AppData.EntityFrameworkCore.SqlServer;
 using Stenn.AppData.Mock;
+using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using Stenn.TestModel.Domain.AppService.Tests.Projections;
 
 namespace Stenn.TestModel.Domain.AppService.Tests
@@ -41,15 +42,15 @@ namespace Stenn.TestModel.Domain.AppService.Tests
 
             return services;
         }
-        
+
         /// <summary>
         /// Projections' registrations
         /// </summary>
         /// <param name="builder"></param>
         private static void InitProjections(AppDataServiceBuilder<ITestModelEntity> builder)
         {
-            builder.AddProjection<TestModelConstantViewDataProjection>();
-            builder.AddProjection<TestModelCountryStateViewDataProjection>();
+            builder.AddProjection<TestModelConstantView, TestModelConstantViewDataProjection>();
+            builder.AddProjection<TestModelCountryStateView, TestModelCountryStateViewDataProjection>();
         }
     }
 }

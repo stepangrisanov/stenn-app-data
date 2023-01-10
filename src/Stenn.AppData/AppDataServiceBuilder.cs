@@ -1,21 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
-namespace Stenn.AppData
+﻿namespace Stenn.AppData
 {
-    public sealed class AppDataServiceBuilder<TBaseEntity>
+    public abstract class AppDataServiceBuilder<TBaseEntity> 
+        where TBaseEntity : class
     {
-        private readonly IServiceCollection _services;
-
-        public AppDataServiceBuilder(IServiceCollection services)
-        {
-            _services = services;
-        }
-
-        public void AddProjection<T>()
-            where T : class, IAppDataProjection<TBaseEntity>
-        {
-            _services.TryAddEnumerable(ServiceDescriptor.Scoped<IAppDataProjection<TBaseEntity>, T>());
-        }
+        public abstract void AddProjection<T, TProjection>()
+            where T : class, TBaseEntity
+            where TProjection : class, IAppDataProjection<T, TBaseEntity>;
     }
 }

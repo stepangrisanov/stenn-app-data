@@ -72,18 +72,30 @@ namespace Stenn.AppData.Tests
         }
 
         [Test]
-        public async Task TestCountries()
+        public async Task TestEntities()
         {
-            var countries = await AppDataService.Query<TestModelCountry>().ToListAsync(cancellationToken: TestCancellationToken);
+            var countries = await AppDataService.Query<TestModelCountry>().ToListAsync(TestCancellationToken);
             var countriesActual = CountryDeclaration.GetActual().ToList();
             countries.Count.Should().Be(countriesActual.Count);
 
             var states = await AppDataService.Query<TestModelCountryState>().Take(5).Include(s => s.Country)
-                .ToListAsync(cancellationToken: TestCancellationToken);
+                .ToListAsync(TestCancellationToken);
 
             states.Count.Should().Be(5);
         }
 
+        [Test]
+        public async Task TestProjections()
+        {
+            // data service should return one CountryState entity - the on filled inside InitEntities()
+            var countries = await AppDataService.Query<TestModelCountryStateView>().Take(5).ToListAsync(TestCancellationToken);
+            countries.Count.Should().Be(5);
+
+            // data service should return one CountryState entity - the on filled inside InitEntities()
+            var constant = await AppDataService.Query<TestModelConstantView>().ToListAsync(TestCancellationToken);
+            constant.Count.Should().Be(1);
+        }
+        
         [Test]
         public void CheckMapping()
         {

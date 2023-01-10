@@ -8,7 +8,7 @@ namespace Stenn.AppData
     {
         public static IServiceCollection AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(this IServiceCollection services,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
-            Action<IServiceProvider>? beforeCreate=null)
+            Action<IServiceProvider>? beforeCreate = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -19,10 +19,10 @@ namespace Stenn.AppData
                 beforeCreate?.Invoke(provider);
                 return provider.GetRequiredService<TServiceImplementation>();
             });
-            
+
             if (initProjections != null)
             {
-                var appServiceBuilder = new AppDataServiceBuilder<TBaseEntity>(services);
+                var appServiceBuilder = new DependencyInjectionAppDataServiceBuilder<TBaseEntity>(services);
                 initProjections(appServiceBuilder);
             }
 
