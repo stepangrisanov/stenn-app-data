@@ -1,6 +1,7 @@
-using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData.Mock
@@ -9,9 +10,8 @@ namespace Stenn.AppData.Mock
     [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
 #endif
     internal sealed class AppDataMockModelCustomizer<TBaseEntity> : ModelCustomizer
-        where TBaseEntity : IAppDataEntity
+        where TBaseEntity : class, IAppDataEntity
     {
-
         /// <inheritdoc />
         public AppDataMockModelCustomizer(ModelCustomizerDependencies dependencies)
             : base(dependencies)
@@ -22,12 +22,13 @@ namespace Stenn.AppData.Mock
         public override void Customize(ModelBuilder modelBuilder, DbContext context)
         {
             base.Customize(modelBuilder, context);
-            var dbContextOptions = context.GetService<IDbContextOptions>();
 
-            var initializer = dbContextOptions.FindExtension<MockServiceBuilderOptionsExtension<TBaseEntity>>()?.Action ??
-                           throw new ApplicationException("Can't find EF extension: MockServiceBuilderOptionsExtension");
-
-            initializer(modelBuilder);
+            var storage = context.GetService<MockDataStorage<TBaseEntity>>();
+            
+            foreach (var data in storage.Dictionary.Where(kp => modelBuilder.Model.FindEntityType(kp.Key) is not null))
+            {
+                modelBuilder.Entity(data.Key).HasData(data.Value);
+            }
         }
     }
 }

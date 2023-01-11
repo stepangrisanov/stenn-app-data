@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
@@ -21,7 +19,7 @@ namespace Stenn.AppData.Mock
         /// <returns></returns>
         public static IServiceCollection AddMockAppDataService<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
-            Action<MockAppDataServiceBuilder<TBaseEntity>> entitiesInit,
+            Action<MockAppDataServiceBuilder<TBaseEntity>>? entitiesInit,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
             QueryTrackingBehavior queryTrackingBehavior = QueryTrackingBehavior.NoTracking)
             where TBaseEntity : class, IAppDataEntity
@@ -37,21 +35,25 @@ namespace Stenn.AppData.Mock
                 services.Remove(projection);
             }
 
+            services.AddScoped<MockDataStorage<TBaseEntity>>(_ =>
+            {
+                var builder = new MockAppDataServiceBuilder<TBaseEntity>();
+                entitiesInit?.Invoke(builder);
+                return new MockDataStorage<TBaseEntity>(builder.Dictionary);
+            });
+            
             if (initProjections != null)
             {
                 var appServiceBuilder = new MockProjectionsAppDataServiceBuilder<TBaseEntity>(services);
                 initProjections(appServiceBuilder);
-                entitiesInit(new MockProjectionValuesAppDataServiceBuilder<TBaseEntity>(appServiceBuilder.MockProjections));
             }
-            
+
             services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>((_, builder) =>
             {
                 builder.UseInMemoryDatabase(typeof(TDbContext).Name);
                 builder.UseQueryTrackingBehavior(queryTrackingBehavior);
-                builder.UseMockServiceBuilder(entitiesInit);
+                builder.UseMockServiceBuilder<TBaseEntity>();
             });
-            
-            
             
             services.AddScoped<TServiceContract>(p =>
             {
