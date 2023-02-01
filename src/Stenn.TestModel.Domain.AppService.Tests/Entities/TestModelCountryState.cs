@@ -5,7 +5,7 @@ namespace Stenn.TestModel.Domain.AppService.Tests.Entities
     /// </summary>
     public class TestModelCountryState : ITestModelEntity
     {
-        protected TestModelCountryState()
+        public TestModelCountryState()
         {
         }
 

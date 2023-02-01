@@ -23,21 +23,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".workflows", ".workflows", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".tests", ".tests", "{4D0A2092-01C6-4396-A117-31263DD64D57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Contracts", "Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj", "{8EB9B19D-2332-4456-AC11-B9AFEE51722D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.Contracts", "Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj", "{8EB9B19D-2332-4456-AC11-B9AFEE51722D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData", "Stenn.AppData\Stenn.AppData.csproj", "{3FBE23FD-BD6B-4959-9D90-69E06A86438C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData", "Stenn.AppData\Stenn.AppData.csproj", "{3FBE23FD-BD6B-4959-9D90-69E06A86438C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Mock", "Stenn.AppData.Mock\Stenn.AppData.Mock.csproj", "{46753306-2642-4EE9-9987-CEB30AC31510}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.Mock", "Stenn.AppData.Mock\Stenn.AppData.Mock.csproj", "{46753306-2642-4EE9-9987-CEB30AC31510}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Tests", "Stenn.AppData.Tests\Stenn.AppData.Tests.csproj", "{4F750AFB-2809-461F-937D-E9BA2CAEBBD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.Tests", "Stenn.AppData.Tests\Stenn.AppData.Tests.csproj", "{4F750AFB-2809-461F-937D-E9BA2CAEBBD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.Domain.Tests", "Stenn.TestModel.Domain.Tests\Stenn.TestModel.Domain.Tests.csproj", "{371645C7-F23F-4E9C-B36F-5277851F8D85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.TestModel.Domain.Tests", "Stenn.TestModel.Domain.Tests\Stenn.TestModel.Domain.Tests.csproj", "{371645C7-F23F-4E9C-B36F-5277851F8D85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.Domain.AppService.Tests", "Stenn.TestModel.Domain.AppService.Tests\Stenn.TestModel.Domain.AppService.Tests.csproj", "{462BA08B-40AF-41D2-A040-FD479F7AE400}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.TestModel.Domain.AppService.Tests", "Stenn.TestModel.Domain.AppService.Tests\Stenn.TestModel.Domain.AppService.Tests.csproj", "{462BA08B-40AF-41D2-A040-FD479F7AE400}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.EntityFrameworkCore", "Stenn.AppData.EntityFrameworkCore\Stenn.AppData.EntityFrameworkCore.csproj", "{C1E57283-194B-43BC-83AE-28B2F7099319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.EntityFrameworkCore", "Stenn.AppData.EntityFrameworkCore\Stenn.AppData.EntityFrameworkCore.csproj", "{C1E57283-194B-43BC-83AE-28B2F7099319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.EntityFrameworkCore.SqlServer", "Stenn.AppData.EntityFrameworkCore.SqlServer\Stenn.AppData.EntityFrameworkCore.SqlServer.csproj", "{E6BD049A-4AF9-448B-9A95-495432E67BCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.EntityFrameworkCore.SqlServer", "Stenn.AppData.EntityFrameworkCore.SqlServer\Stenn.AppData.EntityFrameworkCore.SqlServer.csproj", "{E6BD049A-4AF9-448B-9A95-495432E67BCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Client", "Stenn.AppData.Client\Stenn.AppData.Client.csproj", "{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{E6BD049A-4AF9-448B-9A95-495432E67BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6BD049A-4AF9-448B-9A95-495432E67BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6BD049A-4AF9-448B-9A95-495432E67BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

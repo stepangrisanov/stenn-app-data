@@ -9,6 +9,7 @@
     <PackageReference Include="Stenn.EntityFrameworkCore" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Stenn.AppData.Client\Stenn.AppData.Client.csproj" />
     <ProjectReference Include="..\Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj" />
     <ProjectReference Include="..\Stenn.AppData.EntityFrameworkCore\Stenn.AppData.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Stenn.AppData.Mock\Stenn.AppData.Mock.csproj" />

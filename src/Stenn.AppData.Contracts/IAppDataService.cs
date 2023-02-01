@@ -6,5 +6,7 @@ namespace Stenn.AppData.Contracts
         where TBaseEntity : IAppDataEntity
     {
         IQueryable<T> Query<T>() where T : class, TBaseEntity;
+
+        abstract byte[] ExecuteSerializedQuery(string bonsai);
     }
 }

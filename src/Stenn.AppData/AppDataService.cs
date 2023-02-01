@@ -21,7 +21,9 @@ namespace Stenn.AppData
             return GetProjectionQuery<T>() ?? Set<T>();
         }
 
-        protected abstract IQueryable<T> Set<T>() 
+        public abstract byte[] ExecuteSerializedQuery(string bonsai);
+
+        protected abstract IQueryable<T> Set<T>()
             where T : class;
 
         protected virtual IQueryable<T>? GetProjectionQuery<T>()

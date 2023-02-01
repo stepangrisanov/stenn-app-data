@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Description>Implementations for App Data Services consumer, it exposes Query method but gets data from remote service</Description>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj" />
+        <ProjectReference Include="..\Stenn.AppData\Stenn.AppData.csproj" />
+    </ItemGroup>
+
+</Project>
