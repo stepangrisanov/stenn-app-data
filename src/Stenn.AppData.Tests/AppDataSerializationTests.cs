@@ -11,6 +11,7 @@ using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using Stenn.TestModel.Domain.Tests.Entities.Declarations;
 using Stenn.EntityFrameworkCore.Testing;
 using System;
+using Stenn.AppData.Client;
 
 namespace Stenn.AppData.Tests
 {
@@ -106,9 +107,7 @@ namespace Stenn.AppData.Tests
         {
             var states = await AppDataService.Query<TestModelCountryState>().Take(5).Include(s => s.Country).FirstOrDefaultAsync(TestCancellationToken);
 
-            var testExpression = AppDataService.Query<TestModelCountryState>().Take(5).Include(s => s.Country).Expression;
-
-            var actualStates = AppDataClient.Query<TestModelCountryState>().Take(5).Include(s => s.Country).FirstOrDefault();
+            var actualStates = AppDataClient.Query<TestModelCountryState>().Take(5).IncludeSerializable(s => s.Country).FirstOrDefault();
 
             actualStates.Country.Should().NotBeNull();
         }

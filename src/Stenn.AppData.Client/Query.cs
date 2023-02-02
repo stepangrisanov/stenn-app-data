@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace Stenn.AppData.Client
 {
@@ -64,25 +63,6 @@ namespace Stenn.AppData.Client
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)_provider.Execute(_expression)).GetEnumerator();
-        }
-    }
-
-    public class Includable<TEntity, TProperty> : IIncludableQueryable<TEntity, TProperty>
-    {
-        public Type ElementType => throw new NotImplementedException();
-
-        public Expression Expression => throw new NotImplementedException();
-
-        public IQueryProvider Provider => throw new NotImplementedException();
-
-        public IEnumerator<TEntity> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 }

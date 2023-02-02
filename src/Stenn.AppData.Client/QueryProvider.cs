@@ -1,4 +1,5 @@
-﻿using Stenn.AppData.Contracts;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using Stenn.AppData.Contracts;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,7 +9,7 @@ using System.Reflection;
 
 namespace Stenn.AppData.Client
 {
-    public class QueryProvider : IQueryProvider
+    public class QueryProvider : /*EntityQueryProvider,*/ IQueryProvider
     {
         private readonly IAppDataServiceClient _client;
 
