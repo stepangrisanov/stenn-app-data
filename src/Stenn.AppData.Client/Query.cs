@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Stenn.AppData.Client
 {
-    public class Query<T> : IQueryable<T>, IEnumerable<T>, IQueryable, IEnumerable, IOrderedQueryable<T>, IOrderedQueryable//, IIncludableQueryable<T>
+    public class Query<T> : IQueryable<T>, IEnumerable<T>, IQueryable, IEnumerable, IOrderedQueryable<T>, IOrderedQueryable
     {
         private readonly QueryProvider _provider;
         private readonly Expression _expression;

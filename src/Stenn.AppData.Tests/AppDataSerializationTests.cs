@@ -107,7 +107,7 @@ namespace Stenn.AppData.Tests
         {
             var states = await AppDataService.Query<TestModelCountryState>().Take(5).Include(s => s.Country).FirstOrDefaultAsync(TestCancellationToken);
 
-            var actualStates = AppDataClient.Query<TestModelCountryState>().Take(5).IncludeSerializable(s => s.Country).FirstOrDefault();
+            var actualStates = AppDataClient.Query<TestModelCountryState>().Take(5).Include(s => s.Country).FirstOrDefault();
 
             actualStates.Country.Should().NotBeNull();
         }

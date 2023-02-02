@@ -1,19 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
-using Stenn.AppData.Contracts;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 
 #nullable disable
 
 namespace Stenn.AppData.Client
 {
-    public class QueryProvider : /*EntityQueryProvider,*/ IQueryProvider
+    /// <summary>
+    /// Need to inherit from EntityQueryProvider, as EF extension methdos (such as .Include()) make checks like that "source.Provider is EntityQueryProvider"
+    /// </summary>
+    public class QueryProvider : EntityQueryProvider, IQueryProvider
     {
         private readonly IAppDataServiceClient _client;
 
-        public QueryProvider(IAppDataServiceClient client)
+        public QueryProvider(IAppDataServiceClient client) : base(new QueryCompilerMock())
         {
             _client = client;
         }
@@ -32,42 +36,46 @@ namespace Stenn.AppData.Client
             }
         }
 
-        public IQueryable<T> CreateQuery<T>(Expression expression)
+        public override IQueryable<T> CreateQuery<T>(Expression expression)
         {
             return new Query<T>(this, expression);
         }
 
-        public object Execute(Expression expression)
+        public override object Execute(Expression expression)
         {
             //TODO: проверить откуда это может вызываться. найти тип который возвращает expression и передать его вместо object?
             return Execute<object>(expression);
         }
 
-        public TResult Execute<TResult>(Expression expression)
+        public override TResult Execute<TResult>(Expression expression)
         {
-            /*// заменяем в выражении обращение к типу Query<T> на вызов метода Query<T> на сервисе
-            //var param = Expression.Parameter(_service.GetType(), "service");
-            var param = Expression.Parameter(typeof(IAppDataService<>), "service");
-            var visitor = new ExpressionTreeModifier(param);
-            var newExpression = visitor.Visit(expression);
-
-            // строим лямбду которая будет принимать экземпляр сервиса
-            var lambdaExpression = Expression.Lambda(newExpression, new ParameterExpression[] { param });
-
-            var serializer = new ExpressionSerializer();
-            var slimExpression = serializer.Lift(lambdaExpression);
-            var bonsai = serializer.Serialize(slimExpression);
-
-            // передаем сериализованное выражение в метод сервиса который умеет его исполнять и получаем массив байт сериализованных данных
-            //var bytes = _service.ExecuteSerializedQuery(bonsai);
-
-            var bytes = _client.ExecuteRemote(bonsai);
-
-            var result = _client.Deserialize<TResult>(bytes);
-
-            return result!;*/
-
             return _client.Execute<TResult>(expression);
+        }
+    }
+
+    /// <summary>
+    /// This class only needed to be passed in EntityQueryProvider, no methods should ever be called
+    /// </summary>
+    internal class QueryCompilerMock : IQueryCompiler
+    {
+        public Func<QueryContext, TResult> CreateCompiledAsyncQuery<TResult>(Expression query)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Func<QueryContext, TResult> CreateCompiledQuery<TResult>(Expression query)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Execute<TResult>(Expression query)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult ExecuteAsync<TResult>(Expression query, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
