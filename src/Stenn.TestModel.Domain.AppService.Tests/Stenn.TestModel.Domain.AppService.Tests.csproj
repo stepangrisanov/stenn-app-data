@@ -7,6 +7,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Stenn.Shared.Csv" />
     <PackageReference Include="Stenn.EntityFrameworkCore" />
+    <PackageReference Include="MemoryPack" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stenn.AppData.Client\Stenn.AppData.Client.csproj" />

@@ -39,7 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.EntityFramewo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.EntityFrameworkCore.SqlServer", "Stenn.AppData.EntityFrameworkCore.SqlServer\Stenn.AppData.EntityFrameworkCore.SqlServer.csproj", "{E6BD049A-4AF9-448B-9A95-495432E67BCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Client", "Stenn.AppData.Client\Stenn.AppData.Client.csproj", "{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.Client", "Stenn.AppData.Client\Stenn.AppData.Client.csproj", "{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.PerformanceTests", "Stenn.PerformanceTests\Stenn.PerformanceTests.csproj", "{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,10 @@ Global
 		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		{4F750AFB-2809-461F-937D-E9BA2CAEBBD9} = {4D0A2092-01C6-4396-A117-31263DD64D57}
 		{371645C7-F23F-4E9C-B36F-5277851F8D85} = {4D0A2092-01C6-4396-A117-31263DD64D57}
 		{462BA08B-40AF-41D2-A040-FD479F7AE400} = {4D0A2092-01C6-4396-A117-31263DD64D57}
+		{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B} = {4D0A2092-01C6-4396-A117-31263DD64D57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {90A61DCC-4469-4042-B534-C37020F4A7EF}

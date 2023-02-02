@@ -1,10 +1,14 @@
+using MemoryPack;
+
 namespace Stenn.TestModel.Domain.AppService.Tests.Entities
 {
-    public class TestModelCountry : ITestModelEntity
+    [MemoryPackable]
+    public partial class TestModelCountry : ITestModelEntity
     {
         /// <summary>
         /// Ctor for EF proxies
         /// </summary>
+        [MemoryPackConstructor]
         protected TestModelCountry()
         {
         }

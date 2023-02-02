@@ -81,6 +81,10 @@
         <PackageReference Update="Newtonsoft.Json" Version="13.0.1" />
         
         <PackageReference Update="Nuqleon.Linq.Expressions.Bonsai.Serialization" Version="1.0.0-beta.24" />
+
+        <PackageReference Update="BenchmarkDotNet" Version="0.13.4" />
+        <PackageReference Update="MemoryPack" Version="1.9.12" />
+        <PackageReference Update="MessagePack" Version="2.4.59" />
     </ItemGroup>
     
 </Project>
