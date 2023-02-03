@@ -85,6 +85,8 @@
         <PackageReference Update="BenchmarkDotNet" Version="0.13.4" />
         <PackageReference Update="MemoryPack" Version="1.9.12" />
         <PackageReference Update="MessagePack" Version="2.4.59" />
+
+        <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
     </ItemGroup>
     
 </Project>

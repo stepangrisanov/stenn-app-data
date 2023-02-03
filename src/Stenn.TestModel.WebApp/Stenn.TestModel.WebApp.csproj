@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <!--TargetFramework>net6.0</TargetFramework-->
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Stenn.TestModel.IntegrationTests" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Stenn.TestModel.Domain.AppService.Tests\Stenn.TestModel.Domain.AppService.Tests.csproj" />
+        <ProjectReference Include="..\Stenn.TestModel.Domain.Tests\Stenn.TestModel.Domain.Tests.csproj" />
+    </ItemGroup>
+
+</Project>
