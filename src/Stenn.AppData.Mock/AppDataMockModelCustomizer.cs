@@ -1,7 +1,6 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData.Mock

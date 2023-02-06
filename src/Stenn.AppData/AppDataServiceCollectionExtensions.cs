@@ -28,5 +28,28 @@ namespace Stenn.AppData
 
             return services;
         }
+
+        public static IServiceCollection AddAppDataServiceWithMock<TBaseEntity, TServiceContract, TServiceImplementation, TServiceMockImplementation>(
+            this IServiceCollection services, MockStrategy mockStrategy,
+            Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
+            Action<IServiceProvider>? beforeCreate = null)
+            where TBaseEntity : class, IAppDataEntity
+            where TServiceContract : class, IAppDataService<TBaseEntity>
+            where TServiceImplementation : class, TServiceContract
+            where TServiceMockImplementation : AppDataServiceMock<TBaseEntity>, TServiceContract
+        {
+            if (mockStrategy == MockStrategy.None)
+            {
+                services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(initProjections, beforeCreate);
+            }
+            else
+            {
+                services.AddSingleton<AppDataServiceMockOptions<TBaseEntity>>(_ => new AppDataServiceMockOptions<TBaseEntity>(mockStrategy));
+                services.AddScoped<TServiceContract, TServiceMockImplementation>();
+
+                throw new ArgumentOutOfRangeException(nameof(mockStrategy), mockStrategy, null);
+            }
+            return services;
+        }
     }
 }

@@ -25,6 +25,21 @@ namespace Stenn.TestModel.Domain.AppService.Tests
             return services;
         }
 
+        /// <summary>
+        /// Register public api data service <see cref="ITestModelDataService"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="connectionString"></param>
+        /// <param name="mockStrategy"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddTestModelAppDataServiceWithMock(this IServiceCollection services, string connectionString, MockStrategy mockStrategy)
+        {
+            services.AddAppDataServiceWithSqlServer<ITestModelEntity, ITestModelDataService,
+                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitProjections);
+
+            return services;
+        }
+
 
         /// <summary>
         /// Register mock of public api data service <see cref="ITestModelDataService"/>
