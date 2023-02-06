@@ -1,17 +1,13 @@
-using NUnit.Framework;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using Stenn.TestModel.Domain.Tests;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
-using Stenn.TestModel.Domain.Tests.Entities.Declarations;
-using Stenn.EntityFrameworkCore.Testing;
-using System;
-using Stenn.AppData.Client;
+using Stenn.TestModel.Domain.Tests;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Stenn.AppData.Tests
 {

