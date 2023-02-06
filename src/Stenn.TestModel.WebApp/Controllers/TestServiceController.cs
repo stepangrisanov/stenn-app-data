@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stenn.TestModel.Domain.AppService.Tests;
+using Stenn.TestModel.Domain.AppService.Tests.Entities;
 
 namespace Stenn.TestModel.WebApp.Controllers
 {
@@ -17,7 +18,9 @@ namespace Stenn.TestModel.WebApp.Controllers
         [HttpGet("[action]")]
         public ActionResult Hello()
         {
-            return Content("Hello world");
+            var query = _service.Query<TestModelConstantView>().Select(i => new { data = System.IO.File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")) });
+            var res = query.FirstOrDefault()!.data;
+            return Content(res);
         }
 
         [HttpPost("[action]")]
