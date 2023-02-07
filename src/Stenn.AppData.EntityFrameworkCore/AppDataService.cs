@@ -38,6 +38,9 @@ namespace Stenn.AppData
 
             var deserializedExpression = (LambdaExpression)serializer.Reduce(serializer.Deserialize(bonsai));
 
+            var expressionValidator = new ExpressionTreeValidator();
+            deserializedExpression = (LambdaExpression)expressionValidator.Visit(deserializedExpression);
+
             var resultType = deserializedExpression.ReturnType;
 
             var func = deserializedExpression.Compile();

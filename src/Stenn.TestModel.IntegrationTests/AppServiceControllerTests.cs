@@ -96,14 +96,13 @@ namespace Stenn.TestModel.IntegrationTests
             };
 
             var appDataClient = new TestModelClient(func);
-
             var data = appDataClient.Query<TestModelCountry>().Take(5).ToList();
 
             data.Should().HaveCount(5);
         }
 
         /// <summary>
-        /// We can manually craft Expression to read remote service config. Looks like serious vulnerability
+        /// We can manually craft Expression to read remote service config. Remote service should validate expression before execution
         /// </summary>
         [Test]
         public void ReadRemoteConfigTest()
@@ -116,9 +115,7 @@ namespace Stenn.TestModel.IntegrationTests
             Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, new ParameterExpression[] { param });
 
             var response = httpClient.PostAsync("/TestService/ExecuteSerializedExpression", new StringContent(SerializeExpression(le))).Result;
-            var bytes = response.Content.ReadAsByteArrayAsync().Result;
-            var result = System.Text.Json.JsonSerializer.Deserialize<string>(bytes);
-            result.Should().NotBeEmpty();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
         private string SerializeExpression(Expression expression)
