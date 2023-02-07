@@ -8,12 +8,11 @@ using Stenn.TestModel.Domain.Tests;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Stenn.AppData;
-using System.Linq.CompilerServices.TypeSystem;
 
 namespace Stenn.TestModel.IntegrationTests
 {
     [TestFixture]
-    public class AppServiceControllerTests
+    public class AppServiceClientIntegrationTests
     {
 #if NET6_0
         protected const string DBName = "test-appdata-service_net6";
@@ -36,12 +35,16 @@ namespace Stenn.TestModel.IntegrationTests
 
         private ServiceProvider? ServiceProvider { get; set; }
 
+        private ITestModelDataService? AppDataService { get; set; }
+
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
             var serviceCollection = InitServices();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
+
+            AppDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
 
             var dbContext = ServiceProvider.GetRequiredService<TestModelDbContext>();
             await dbContext.Database.EnsureCreatedAsync(TestCancellationToken);
@@ -84,21 +87,69 @@ namespace Stenn.TestModel.IntegrationTests
         /// AppDataClient builds expression and sends it to webApp. webApp executes expression on TestModelService to get data, serializes data and sends it back to client.
         /// </summary>
         [Test]
-        public void PostSerializedExpressionTest()
+        public void ClientQueryTest()
         {
+            var expectedResult = AppDataService!.Query<TestModelCountry>().Take(5).ToList();
+
             var httpClient = GetClient();
+            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
+            var appDataClient = new TestModelClient(httpClient);
 
-            Func<string, byte[]> func = (string s) =>
-            {
-                var result = httpClient.PostAsync("/TestService/ExecuteSerializedExpression", new StringContent(s)).Result;
-                result.EnsureSuccessStatusCode();
-                return result.Content.ReadAsByteArrayAsync().Result;
-            };
+            var result = appDataClient.Query<TestModelCountry>().Take(5).ToList();
 
-            var appDataClient = new TestModelClient(func);
-            var data = appDataClient.Query<TestModelCountry>().Take(5).ToList();
+            result.Should().BeEquivalentTo(expectedResult);
+        }
 
-            data.Should().HaveCount(5);
+        /// <summary>
+        /// AppDataClient builds expression and sends it to webApp. webApp executes expression on TestModelService to get data, serializes data and sends it back to client.
+        /// </summary>
+        [Test]
+        public void ClientQueryWithAnonymousTypeTest()
+        {
+            var expectedResult = AppDataService!.Query<TestModelCountry>().Select(i => new { Name = i.Name, Code = i.Alpha3Code }).ToList();
+
+            var httpClient = GetClient();
+            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
+            var appDataClient = new TestModelClient(httpClient);
+
+            var result = appDataClient.Query<TestModelCountry>().Select(i => new { Name = i.Name, Code = i.Alpha3Code }).ToList();
+
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public void ClientQueryIncludeTest()
+        {
+            var expectedResult = AppDataService!.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
+
+            var httpClient = GetClient();
+            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
+            var appDataClient = new TestModelClient(httpClient);
+
+            var result = appDataClient.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
+
+            result.Should().BeEquivalentTo(expectedResult);
+            result.First().Country.Should().NotBeNull();
+        }
+
+        [Test]
+        public void ClientQueryJoinTest()
+        {
+            var expectedResult = AppDataService!.Query<TestModelCountry>()
+                .Where(i => i.Id == "US")
+                .Join(AppDataService!.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
+                .ToList();
+
+            var httpClient = GetClient();
+            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
+            var appDataClient = new TestModelClient(httpClient);
+
+            var result = appDataClient.Query<TestModelCountry>()
+                .Where(i => i.Id == "US")
+                .Join(appDataClient.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
+                .ToList();
+
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         /// <summary>

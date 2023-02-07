@@ -28,5 +28,20 @@ namespace Stenn.AppData
 
             return base.VisitMethodCall(node);
         }
+
+        protected override Expression VisitGoto(GotoExpression node)
+        {
+            return Expression.Empty();
+        }
+
+        protected override Expression VisitLoop(LoopExpression node)
+        {
+            return Expression.Empty();
+        }
+
+        protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
+        {
+            return Expression.Empty();
+        }
     }
 }

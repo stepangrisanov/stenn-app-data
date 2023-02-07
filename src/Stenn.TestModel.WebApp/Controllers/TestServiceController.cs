@@ -32,7 +32,6 @@ namespace Stenn.TestModel.WebApp.Controllers
             }
             catch
             {
-
                 return BadRequest();
             }
         }

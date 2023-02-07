@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Text.Json;
 
 #nullable disable
@@ -10,11 +11,11 @@ namespace Stenn.AppData.Client
 {
     public class AppDataServiceClient<TBaseEntity> : IAppDataServiceClient, IAppDataService<TBaseEntity> where TBaseEntity : class, IAppDataEntity
     {
-        private Func<string, byte[]> executeRemote;
+        private HttpClient _httpClient;
 
-        public AppDataServiceClient(Func<string, byte[]> remoteCall)
+        public AppDataServiceClient(HttpClient httpClient)
         {
-            executeRemote = remoteCall;
+            _httpClient = httpClient;
         }
 
         public IQueryable<T> Query<T>() where T : class, TBaseEntity
@@ -29,7 +30,10 @@ namespace Stenn.AppData.Client
 
         public byte[] ExecuteRemote(string serializedExpression)
         {
-            return executeRemote(serializedExpression);
+            // no requestUri passed. httpClient's base address should already be configured to use correct uri
+            var response = _httpClient.PostAsync(string.Empty, new StringContent(serializedExpression)).Result;
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadAsByteArrayAsync().Result;
         }
 
         public TResult Execute<TResult>(Expression expression)
