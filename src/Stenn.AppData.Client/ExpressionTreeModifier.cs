@@ -14,16 +14,14 @@ namespace Stenn.AppData.Client
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
-            if (IsSubclassOfRawGeneric(typeof(Query<>), c.Type))
-            {
-                var serviceQueryType = c.Type.GetGenericArguments()[0];
-                var serviceCall = Expression.Call(_serviceParam, "Query", new Type[] { serviceQueryType });
-                return serviceCall;
-            }
-            else
+            if (!IsSubclassOfRawGeneric(typeof(Query<>), c.Type))
             {
                 return c;
             }
+
+            var serviceQueryType = c.Type.GetGenericArguments()[0];
+            var serviceCall = Expression.Call(_serviceParam, "Query", new[] { serviceQueryType });
+            return serviceCall;
         }
 
         static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)

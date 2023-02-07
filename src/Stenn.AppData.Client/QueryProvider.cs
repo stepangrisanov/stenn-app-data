@@ -24,7 +24,7 @@ namespace Stenn.AppData.Client
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
-            Type elementType = TypeSystem.GetElementType(expression.Type);
+            var elementType = TypeSystem.GetElementType(expression.Type);
 
             try
             {

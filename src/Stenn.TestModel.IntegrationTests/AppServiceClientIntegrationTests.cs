@@ -79,7 +79,7 @@ namespace Stenn.TestModel.IntegrationTests
         public async Task GetIndexTest()
         {
             var hpptClient = GetClient();
-            var response = await hpptClient.GetAsync("/TestService/Hello");
+            var response = await hpptClient.GetAsync("/TestService/Hello", TestCancellationToken);
             response.EnsureSuccessStatusCode();
         }
 
@@ -106,13 +106,13 @@ namespace Stenn.TestModel.IntegrationTests
         [Test]
         public void ClientQueryWithAnonymousTypeTest()
         {
-            var expectedResult = AppDataService!.Query<TestModelCountry>().Select(i => new { Name = i.Name, Code = i.Alpha3Code }).ToList();
+            var expectedResult = AppDataService!.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
 
             var httpClient = GetClient();
             httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
             var appDataClient = new TestModelClient(httpClient);
 
-            var result = appDataClient.Query<TestModelCountry>().Select(i => new { Name = i.Name, Code = i.Alpha3Code }).ToList();
+            var result = appDataClient.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
 
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -133,21 +133,21 @@ namespace Stenn.TestModel.IntegrationTests
         }
 
         [Test]
-        public void ClientQueryJoinTest()
+        public async Task ClientQueryJoinTest()
         {
-            var expectedResult = AppDataService!.Query<TestModelCountry>()
+            var expectedResult = await AppDataService!.Query<TestModelCountry>()
                 .Where(i => i.Id == "US")
                 .Join(AppDataService!.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
-                .ToList();
+                .ToListAsync(cancellationToken: TestCancellationToken);
 
             var httpClient = GetClient();
             httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
             var appDataClient = new TestModelClient(httpClient);
 
-            var result = appDataClient.Query<TestModelCountry>()
+            var result = await appDataClient.Query<TestModelCountry>()
                 .Where(i => i.Id == "US")
                 .Join(appDataClient.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
-                .ToList();
+                .ToListAsync(cancellationToken: TestCancellationToken);
 
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -163,7 +163,7 @@ namespace Stenn.TestModel.IntegrationTests
             var pathExpression = Expression.Constant(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
             var ex = Expression.Call(typeof(File), "ReadAllText", null, pathExpression);
             var param = Expression.Parameter(typeof(object), "service");
-            Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, new ParameterExpression[] { param });
+            Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, param);
 
             var response = httpClient.PostAsync("/TestService/ExecuteSerializedExpression", new StringContent(SerializeExpression(le))).Result;
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);

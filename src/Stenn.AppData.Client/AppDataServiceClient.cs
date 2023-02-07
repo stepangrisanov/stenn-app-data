@@ -45,7 +45,7 @@ namespace Stenn.AppData.Client
             var newExpression = visitor.Visit(expression);
 
             // строим лямбду которая будет принимать экземпляр сервиса
-            var lambdaExpression = Expression.Lambda(newExpression, new ParameterExpression[] { param });
+            var lambdaExpression = Expression.Lambda(newExpression, param);
 
             var serializer = new ExpressionSerializer();
             var slimExpression = serializer.Lift(lambdaExpression);

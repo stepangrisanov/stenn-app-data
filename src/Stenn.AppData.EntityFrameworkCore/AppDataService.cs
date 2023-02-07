@@ -51,14 +51,14 @@ namespace Stenn.AppData
                 var innerType = resultType.GetGenericArguments()[0];
                 resultType = typeof(IEnumerable<>).MakeGenericType(innerType);
 
-                var castMethod = GetType().GetMethod("WriteGenericList")!.MakeGenericMethod(innerType);
-                res = castMethod.Invoke(this, new object[] { res! });
+                var castMethod = GetType().GetMethod(nameof(WriteGenericList))!.MakeGenericMethod(innerType);
+                res = castMethod.Invoke(this, new[] { res! });
             }
 
             var serializedResponse = GetType()
-                .GetMethod("Serialize")!
+                .GetMethod(nameof(Serialize))!
                 .MakeGenericMethod(resultType)
-                .Invoke(this, new object[] { res! });
+                .Invoke(this, new[] { res! });
 
             return (byte[])serializedResponse!;
         }
@@ -68,7 +68,7 @@ namespace Stenn.AppData
             return ((IEnumerable<T>)obj).ToList();
         }
 
-        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        private static bool IsSubclassOfRawGeneric(Type generic, Type? toCheck)
         {
             while (toCheck != null && toCheck != typeof(object))
             {
