@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Stenn.AppData.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,10 +10,12 @@ namespace Stenn.AppData
 {
     public class ExpressionTreeValidator : ExpressionVisitor
     {
-        private readonly List<MethodInfo> _allowedMethods = new List<MethodInfo>();
+        private readonly List<MethodInfo> _allowedMethods = new();
+        private readonly Func<MethodInfo, bool>? _additionalValidationFunc;
 
-        public ExpressionTreeValidator()
+        public ExpressionTreeValidator(Func<MethodInfo, bool>? additionalValidationFunc = null)
         {
+            _additionalValidationFunc = additionalValidationFunc;
             _allowedMethods.AddRange(typeof(IAppDataService<>).GetMethods().Where(i => i.Name == "Query"));
             _allowedMethods.AddRange(typeof(Queryable).GetMethods());
             _allowedMethods.AddRange(typeof(EntityFrameworkQueryableExtensions).GetMethods());
@@ -21,9 +24,9 @@ namespace Stenn.AppData
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             var method = node.Method;
-            if (_allowedMethods.Where(i => i.MetadataToken == method.MetadataToken && i.Module == method.Module).Count() == 0)
+            if (!CheckAllowed(method) && !CheckAllowedExternally(method))
             {
-                return Expression.Empty();
+                return Expression.Default(node.Type);
             }
 
             return base.VisitMethodCall(node);
@@ -42,6 +45,16 @@ namespace Stenn.AppData
         protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
             return Expression.Empty();
+        }
+
+        private bool CheckAllowed(MethodInfo method)
+        {
+            return _allowedMethods.Where(i => i.MetadataToken == method.MetadataToken && i.Module == method.Module).Count() != 0;
+        }
+
+        private bool CheckAllowedExternally(MethodInfo method)
+        {
+            return _additionalValidationFunc?.Invoke(method) ?? false;
         }
     }
 }

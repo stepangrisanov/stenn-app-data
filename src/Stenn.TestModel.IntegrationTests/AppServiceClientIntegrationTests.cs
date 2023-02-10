@@ -8,6 +8,10 @@ using Stenn.TestModel.Domain.Tests;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Stenn.AppData;
+using Microsoft.Extensions.DependencyInjection;
+using FluentAssertions.Common;
+using System.Reflection.Metadata.Ecma335;
+using System.Net.Http;
 
 namespace Stenn.TestModel.IntegrationTests
 {
@@ -31,7 +35,12 @@ namespace Stenn.TestModel.IntegrationTests
 
         private readonly WebApplicationFactory<Program> _applicationFactory = new WebApplicationFactory<Program>();
 
-        public HttpClient GetClient() => _applicationFactory.CreateClient();
+        public HttpClient GetClient(string? uri = null)
+        { 
+            var client = _applicationFactory.CreateClient();
+            if (!string.IsNullOrEmpty(uri)) client.BaseAddress = new Uri(client.BaseAddress!, uri);
+            return client;
+        }
 
         private ServiceProvider? ServiceProvider { get; set; }
 
@@ -57,7 +66,7 @@ namespace Stenn.TestModel.IntegrationTests
             await dbContext.Database.EnsureDeletedAsync(TestCancellationToken);
         }
 
-        internal static IServiceCollection InitServices(string dbName = DBName)
+        internal IServiceCollection InitServices(string dbName = DBName)
         {
             var services = new ServiceCollection();
 
@@ -69,11 +78,14 @@ namespace Stenn.TestModel.IntegrationTests
 
             services.AddTestModelAppDataService(connString);
 
+            services.AddTransient(i => GetClient("TestService/ExecuteSerializedExpression"));
+            services.AddTransient<TestModelClient>();
+
             return services;
         }
 
         /// <summary>
-        /// Checking if webApp can precess responses
+        /// Checking if webApp can process responses
         /// </summary>
         [Test]
         public async Task GetIndexTest()
@@ -91,9 +103,7 @@ namespace Stenn.TestModel.IntegrationTests
         {
             var expectedResult = AppDataService!.Query<TestModelCountry>().Take(5).ToList();
 
-            var httpClient = GetClient();
-            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
-            var appDataClient = new TestModelClient(httpClient);
+            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
 
             var result = appDataClient.Query<TestModelCountry>().Take(5).ToList();
 
@@ -108,9 +118,7 @@ namespace Stenn.TestModel.IntegrationTests
         {
             var expectedResult = AppDataService!.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
 
-            var httpClient = GetClient();
-            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
-            var appDataClient = new TestModelClient(httpClient);
+            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
 
             var result = appDataClient.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
 
@@ -122,9 +130,7 @@ namespace Stenn.TestModel.IntegrationTests
         {
             var expectedResult = AppDataService!.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
 
-            var httpClient = GetClient();
-            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
-            var appDataClient = new TestModelClient(httpClient);
+            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
 
             var result = appDataClient.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
 
@@ -140,14 +146,24 @@ namespace Stenn.TestModel.IntegrationTests
                 .Join(AppDataService!.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
                 .ToListAsync(cancellationToken: TestCancellationToken);
 
-            var httpClient = GetClient();
-            httpClient.BaseAddress = new Uri(httpClient.BaseAddress!, "TestService/ExecuteSerializedExpression");
-            var appDataClient = new TestModelClient(httpClient);
+            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
 
             var result = await appDataClient.Query<TestModelCountry>()
                 .Where(i => i.Id == "US")
                 .Join(appDataClient.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
                 .ToListAsync(cancellationToken: TestCancellationToken);
+
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public void ClientQueryOrderTest()
+        {
+            var expectedResult = AppDataService!.Query<TestModelCountryState>().OrderBy(i=>i.Description).Take(5).ToList();
+
+            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
+
+            var result = appDataClient.Query<TestModelCountryState>().OrderBy(i => i.Description).Take(5).ToList();
 
             result.Should().BeEquivalentTo(expectedResult);
         }
