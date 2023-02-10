@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData;
@@ -16,11 +17,12 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         /// </summary>
         /// <param name="services"></param>
         /// <param name="connectionString"></param>
+        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
-        public static IServiceCollection AddTestModelAppDataService(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddTestModelAppDataService(this IServiceCollection services, string connectionString, Func<MethodInfo, bool> expressionValidationFunc = null)
         {
             services.AddAppDataServiceSqlServer<ITestModelEntity, ITestModelDataService,
-                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitProjections);
+                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitProjections, expressionValidationFunc: expressionValidationFunc);
 
             return services;
         }

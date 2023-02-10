@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,13 +18,15 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
         /// <param name="initSqlServer"></param>
         /// <param name="initProjections"></param>
         /// <param name="initAction"></param>
+        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
         public static IServiceCollection AddAppDataServiceSqlServer<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
             DbConnection connection,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
             Action<IServiceProvider, DbContextOptionsBuilder>? initAction = null,
-            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null)
+            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null,
+            Func<MethodInfo, bool>? expressionValidationFunc = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -32,7 +35,8 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
             return AddAppDataServiceSqlServer<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(services,
                 _ => connection, initProjections,
                 initAction,
-                initSqlServer);
+                initSqlServer,
+                expressionValidationFunc);
         }
 
         /// <summary>
@@ -43,13 +47,15 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
         /// <param name="initSqlServer"></param>
         /// <param name="initProjections"></param>
         /// <param name="initAction"></param>
+        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
         public static IServiceCollection AddAppDataServiceSqlServer<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
             Func<IServiceProvider, DbConnection> connectionFunc,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
             Action<IServiceProvider, DbContextOptionsBuilder>? initAction = null,
-            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null)
+            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null,
+            Func<MethodInfo, bool>? expressionValidationFunc = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -60,7 +66,7 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
                 var connection = connectionFunc(provider);
                 builder.UseSqlServer(connection, initSqlServer);
                 initAction?.Invoke(provider, builder);
-            }, initProjections);
+            }, initProjections, expressionValidationFunc);
         }
 
         /// <summary>
@@ -71,13 +77,15 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
         /// <param name="initSqlServer"></param>
         /// <param name="initProjections"></param>
         /// <param name="initAction"></param>
+        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
         public static IServiceCollection AddAppDataServiceSqlServer<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
             string connectionString,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
             Action<IServiceProvider, DbContextOptionsBuilder>? initAction = null,
-            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null)
+            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null,
+            Func<MethodInfo, bool>? expressionValidationFunc = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -85,7 +93,7 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
         {
             return AddAppDataServiceSqlServer<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(services, _ => connectionString,
                 initProjections, initAction,
-                initSqlServer);
+                initSqlServer, expressionValidationFunc);
         }
 
         /// <summary>
@@ -96,13 +104,15 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
         /// <param name="initSqlServer"></param>
         /// <param name="initProjections"></param>
         /// <param name="initAction"></param>
+        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
         public static IServiceCollection AddAppDataServiceSqlServer<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
             Func<IServiceProvider, string> connectionStringFunc,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
             Action<IServiceProvider, DbContextOptionsBuilder>? initAction = null,
-            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null)
+            Action<SqlServerDbContextOptionsBuilder>? initSqlServer = null,
+            Func<MethodInfo, bool>? expressionValidationFunc = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -113,7 +123,7 @@ namespace Stenn.AppData.EntityFrameworkCore.SqlServer
                 var connectionString = connectionStringFunc(provider);
                 builder.UseSqlServer(connectionString, initSqlServer);
                 initAction?.Invoke(provider, builder);
-            }, initProjections);
+            }, initProjections, expressionValidationFunc);
         }
     }
 }

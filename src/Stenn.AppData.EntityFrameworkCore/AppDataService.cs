@@ -13,11 +13,13 @@ namespace Stenn.AppData
         where TBaseEntity : class, IAppDataEntity
     {
         private TDbContext DBContext { get; }
+        private readonly ExpressionValidationOptions<TBaseEntity>? _expressionValidationOptions;
 
-        protected AppDataService(TDbContext dbContext, IEnumerable<IAppDataProjection<TBaseEntity>> projections)
+        protected AppDataService(TDbContext dbContext, IEnumerable<IAppDataProjection<TBaseEntity>> projections, ExpressionValidationOptions<TBaseEntity>? expressionValidationOptions = null)
         :base(projections)
         {
             DBContext = dbContext;
+            _expressionValidationOptions = expressionValidationOptions;
         }
 
         protected override IQueryable<T> Set<T>()
@@ -38,7 +40,7 @@ namespace Stenn.AppData
 
             var deserializedExpression = (LambdaExpression)serializer.Reduce(serializer.Deserialize(bonsai));
 
-            var expressionValidator = new ExpressionTreeValidator();
+            var expressionValidator = new ExpressionTreeValidator(_expressionValidationOptions?.validationFunc);
             deserializedExpression = (LambdaExpression)expressionValidator.Visit(deserializedExpression);
 
             var resultType = deserializedExpression.ReturnType;
