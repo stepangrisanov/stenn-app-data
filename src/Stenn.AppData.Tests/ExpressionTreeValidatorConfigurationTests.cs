@@ -1,19 +1,16 @@
 ﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+//using Nuqleon.Json.Expressions;
+using Stenn.AppData.Client;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
-using Stenn.TestModel.Domain.Tests;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Net.Http;
 
 namespace Stenn.AppData.Tests
 {
@@ -34,6 +31,7 @@ namespace Stenn.AppData.Tests
         }
 
         private ITestModelDataService AppDataService { get; set; }
+        private TestModelClient AppDataServiceClient { get; set; }
         private ServiceProvider ServiceProvider { get; set; }
 
         [Test]
@@ -64,8 +62,45 @@ namespace Stenn.AppData.Tests
             ServiceProvider = services.BuildServiceProvider();
             AppDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
 
-            var result = BuildAndExecuteExpression();
-            result.Should().BeNull();
+            Action act = () => BuildAndExecuteExpression();
+            act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("Expression contains not allowed method"));
+        }
+
+        [Test]
+        public void ExpressionTreeClientValidatorWithConfiguration()
+        {
+            var services = new ServiceCollection();
+            var connString = GetConnectionString(DBName);
+
+            // provide additional expression validation function to allow additional methods
+            services.AddTestModelAppDataServiceClient((x) => x.Name == nameof(Directory.GetCurrentDirectory));
+
+            services.AddHttpClient<TestModelClient>();
+
+            ServiceProvider = services.BuildServiceProvider();
+            AppDataServiceClient = ServiceProvider.GetRequiredService<TestModelClient>();
+
+            Action act = () => AppDataServiceClient.Query<TestModelCountry>().Select(x => new { Text = Directory.GetCurrentDirectory() }).First();
+            // this exception happens when sending data, which means validation passed
+            act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("An invalid request URI was provided"));
+        }
+
+        [Test]
+        public void ExpressionTreeClientValidatorWithoutConfiguration()
+        {
+            var services = new ServiceCollection();
+            var connString = GetConnectionString(DBName);
+
+            // no additional expression validation function provided
+            services.AddTestModelAppDataServiceClient();
+
+            services.AddHttpClient<TestModelClient>();
+
+            ServiceProvider = services.BuildServiceProvider();
+            AppDataServiceClient = ServiceProvider.GetRequiredService<TestModelClient>();
+
+            Action act = () => AppDataServiceClient.Query<TestModelCountry>().Select(x => new { Text = Directory.GetCurrentDirectory() }).First();
+            act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("Expression contains not allowed method"));
         }
 
         private string BuildAndExecuteExpression()

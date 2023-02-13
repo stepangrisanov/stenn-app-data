@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="build\*.*" PackagePath="build\" Pack="true" />
     <None Include="buildMultiTargeting\*.*" PackagePath="buildMultiTargeting\" Pack="true" />
   </ItemGroup>

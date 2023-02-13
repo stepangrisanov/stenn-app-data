@@ -35,7 +35,7 @@ namespace Stenn.TestModel.IntegrationTests
 
         private readonly WebApplicationFactory<Program> _applicationFactory = new WebApplicationFactory<Program>();
 
-        public HttpClient GetClient(string? uri = null)
+        private HttpClient GetHttpClient(string? uri = null)
         { 
             var client = _applicationFactory.CreateClient();
             if (!string.IsNullOrEmpty(uri)) client.BaseAddress = new Uri(client.BaseAddress!, uri);
@@ -78,7 +78,7 @@ namespace Stenn.TestModel.IntegrationTests
 
             services.AddTestModelAppDataService(connString);
 
-            services.AddTransient(i => GetClient("TestService/ExecuteSerializedExpression"));
+            services.AddTransient(i => GetHttpClient("TestService/ExecuteSerializedExpression"));
             services.AddTransient<TestModelClient>();
 
             return services;
@@ -90,7 +90,7 @@ namespace Stenn.TestModel.IntegrationTests
         [Test]
         public async Task GetIndexTest()
         {
-            var hpptClient = GetClient();
+            var hpptClient = GetHttpClient();
             var response = await hpptClient.GetAsync("/TestService/Hello", TestCancellationToken);
             response.EnsureSuccessStatusCode();
         }
@@ -174,7 +174,7 @@ namespace Stenn.TestModel.IntegrationTests
         [Test]
         public void ReadRemoteConfigTest()
         {
-            var httpClient = GetClient();
+            var httpClient = GetHttpClient();
 
             var pathExpression = Expression.Constant(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
             var ex = Expression.Call(typeof(File), "ReadAllText", null, pathExpression);

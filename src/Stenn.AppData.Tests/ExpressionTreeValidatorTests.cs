@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Stenn.AppData.Tests
         [Test]
         public void ToStringAllowedTest()
         {
-            ExpressionTreeValidator validator = new ExpressionTreeValidator();
+            var validator = new ExpressionTreeValidator<object>();
             var expression = source.Select(x => x.ToString()).Expression;
             var sanitizedExpression = validator.Visit(expression);
             new ExpressionTreeSearch().FindUsage(nameof(ToString), sanitizedExpression).Should().BeTrue();
@@ -25,16 +26,16 @@ namespace Stenn.AppData.Tests
         [Test]
         public void GetCurrentDirectoryDisallowedTest()
         {
-            ExpressionTreeValidator validator = new ExpressionTreeValidator();
+            var validator = new ExpressionTreeValidator<object>();
             var expression = source.Select(x => new { Text = Directory.GetCurrentDirectory() }).Expression;
-            var sanitizedExpression = validator.Visit(expression);
-            new ExpressionTreeSearch().FindUsage(nameof(Directory.GetCurrentDirectory), sanitizedExpression).Should().BeFalse();
+            Action act = () => validator.Visit(expression);
+            act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("Expression contains not allowed method"));
         }
 
         [Test]
         public void GetCurrentDirectoryAllowedExplicitlyTest()
         {
-            ExpressionTreeValidator validator = new ExpressionTreeValidator((MethodInfo mi) => mi.Name == nameof(Directory.GetCurrentDirectory));
+            var validator = new ExpressionTreeValidator<object>((MethodInfo mi) => mi.Name == nameof(Directory.GetCurrentDirectory));
             var expression = source.Select(x => new { Text = Directory.GetCurrentDirectory() }).Expression;
             var sanitizedExpression = validator.Visit(expression);
             new ExpressionTreeSearch().FindUsage(nameof(Directory.GetCurrentDirectory), sanitizedExpression).Should().BeTrue();
@@ -43,7 +44,7 @@ namespace Stenn.AppData.Tests
         [Test]
         public void GetCurrentDirectoryAllowedByModuleTest()
         {
-            ExpressionTreeValidator validator = new ExpressionTreeValidator((MethodInfo mi) => mi.Module.Name == typeof(Directory).Methods().First().Module.Name);
+            var validator = new ExpressionTreeValidator<object>((MethodInfo mi) => mi.Module.Name == typeof(Directory).Methods().First().Module.Name);
             var expression = source.Select(x => new { Text = Directory.GetCurrentDirectory() }).Expression;
             var sanitizedExpression = validator.Visit(expression);
             new ExpressionTreeSearch().FindUsage(nameof(Directory.GetCurrentDirectory), sanitizedExpression).Should().BeTrue();
@@ -52,10 +53,10 @@ namespace Stenn.AppData.Tests
         [Test]
         public void GetCurrentDirectoryDisallowedIfAllowedSomethingElseTest()
         {
-            ExpressionTreeValidator validator = new ExpressionTreeValidator((MethodInfo mi) => mi.Module.Name == nameof(Directory.CreateDirectory));
+            var validator = new ExpressionTreeValidator<object>((MethodInfo mi) => mi.Module.Name == nameof(Directory.CreateDirectory));
             var expression = source.Select(x => new { Text = Directory.GetCurrentDirectory() }).Expression;
-            var sanitizedExpression = validator.Visit(expression);
-            new ExpressionTreeSearch().FindUsage(nameof(Directory.GetCurrentDirectory), sanitizedExpression).Should().BeFalse();
+            Action act = () => validator.Visit(expression);
+            act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("Expression contains not allowed method"));
         }
     }
 

@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Stenn.AppData
 {
-    public class ExpressionTreeValidator : ExpressionVisitor
+    public class ExpressionTreeValidator<T> : ExpressionVisitor
     {
         private readonly List<MethodInfo> _allowedMethods = new();
         private readonly Func<MethodInfo, bool>? _additionalValidationFunc;
@@ -26,7 +26,7 @@ namespace Stenn.AppData
             var method = node.Method;
             if (!CheckAllowed(method) && !CheckAllowedExternally(method))
             {
-                return Expression.Default(node.Type);
+                throw new InvalidOperationException($"Expression contains not allowed method {method.Name} from module {method.Module}. Use DI method to add custom validation function if needed.");
             }
 
             return base.VisitMethodCall(node);

@@ -30,7 +30,8 @@ namespace Stenn.AppData
 
             if (expressionValidationFunc != null)
             {
-                services.AddSingleton(new ExpressionValidationOptions<TBaseEntity> { validationFunc = expressionValidationFunc });
+                //services.AddSingleton(new ExpressionValidationOptions<TBaseEntity> { validationFunc = expressionValidationFunc });
+                services.AddSingleton(new ExpressionTreeValidator<TBaseEntity>(expressionValidationFunc));
             }
 
             return services;

@@ -46,6 +46,24 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         }
 
         /// <summary>
+        /// Register public api data service client <see cref="ITestModelDataService"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="expressionValidationFunc"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddTestModelAppDataServiceClient(this IServiceCollection services, Func<MethodInfo, bool> expressionValidationFunc = null)
+        {
+            services.AddScoped<TestModelClient>();
+
+            if (expressionValidationFunc != null)
+            {
+                services.AddSingleton(new ExpressionTreeValidator<ITestModelEntity>(expressionValidationFunc));
+            }
+
+            return services;
+        }
+
+        /// <summary>
         /// Projections' registrations
         /// </summary>
         /// <param name="builder"></param>

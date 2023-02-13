@@ -8,8 +8,8 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         /// <inheritdoc />
         public TestModelDataService(TestModelAppDataServiceDbContext dbContext,
             IEnumerable<IAppDataProjection<ITestModelEntity>> projections,
-            ExpressionValidationOptions<ITestModelEntity> expressionValidationOptions = null)
-            : base(dbContext, projections, expressionValidationOptions)
+            ExpressionTreeValidator<ITestModelEntity> expressionValidator = null)
+            : base(dbContext, projections, expressionValidator)
         {
         }
     }

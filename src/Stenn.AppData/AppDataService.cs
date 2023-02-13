@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData
@@ -9,9 +10,12 @@ namespace Stenn.AppData
     {
         private readonly IEnumerable<IAppDataProjection<TBaseEntity>> _projections;
 
-        protected AppDataService(IEnumerable<IAppDataProjection<TBaseEntity>> projections)
+        private readonly ExpressionTreeValidator<TBaseEntity> _expressionValidator;
+
+        protected AppDataService(IEnumerable<IAppDataProjection<TBaseEntity>> projections, ExpressionTreeValidator<TBaseEntity>? expressionValidator = null)
         {
             _projections = projections.ToList();
+            _expressionValidator = expressionValidator ?? new ExpressionTreeValidator<TBaseEntity>();
         }
 
         /// <inheritdoc />
@@ -36,6 +40,11 @@ namespace Stenn.AppData
             where T : class, TBaseEntity
         {
             return (IAppDataProjection<T, TBaseEntity>?)_projections.SingleOrDefault(p => p.GetEntityType() == typeof(T));
+        }
+
+        protected Expression ValidateExpression(Expression expression)
+        {
+            return _expressionValidator.Visit(expression);
         }
     }
 }

@@ -9,13 +9,16 @@ using System.Text.Json;
 
 namespace Stenn.AppData.Client
 {
-    public class AppDataServiceClient<TBaseEntity> : IAppDataServiceClient, IAppDataService<TBaseEntity> where TBaseEntity : class, IAppDataEntity
+    public class AppDataServiceClient<TBaseEntity> : IAppDataService<TBaseEntity>, IAppDataServiceClient where TBaseEntity : class, IAppDataEntity
     {
         private HttpClient _httpClient;
 
-        public AppDataServiceClient(HttpClient httpClient)
+        private readonly ExpressionTreeValidator<TBaseEntity> _expressionValidator;
+
+        public AppDataServiceClient(HttpClient httpClient, ExpressionTreeValidator<TBaseEntity> expressionValidator = null)
         {
             _httpClient = httpClient;
+            _expressionValidator = expressionValidator ?? new ExpressionTreeValidator<TBaseEntity>();
         }
 
         public IQueryable<T> Query<T>() where T : class, TBaseEntity
@@ -47,6 +50,9 @@ namespace Stenn.AppData.Client
             // строим лямбду которая будет принимать экземпляр сервиса
             var lambdaExpression = Expression.Lambda(newExpression, param);
 
+            // валидируем полученное выражение
+            lambdaExpression = (LambdaExpression)ValidateExpression(lambdaExpression);
+
             var serializer = new ExpressionSerializer();
             var slimExpression = serializer.Lift(lambdaExpression);
             var bonsai = serializer.Serialize(slimExpression);
@@ -61,6 +67,11 @@ namespace Stenn.AppData.Client
         public byte[] ExecuteSerializedQuery(string bonsai)
         {
             throw new NotImplementedException();
+        }
+
+        protected Expression ValidateExpression(Expression expression)
+        {
+            return _expressionValidator.Visit(expression);
         }
     }
 }
