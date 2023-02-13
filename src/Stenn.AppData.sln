@@ -41,11 +41,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.EntityFramewo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.AppData.Client", "Stenn.AppData.Client\Stenn.AppData.Client.csproj", "{CCB0B7FC-C0E8-4964-8C45-7EB2BF0CC809}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.PerformanceTests", "Stenn.PerformanceTests\Stenn.PerformanceTests.csproj", "{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.PerformanceTests", "Stenn.PerformanceTests\Stenn.PerformanceTests.csproj", "{7ADEBDD0-225C-4519-9BE7-5901F87DCD4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.WebApp", "Stenn.TestModel.WebApp\Stenn.TestModel.WebApp.csproj", "{8EFD4162-B0DF-466F-B0EA-FA2A1DE9107C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.TestModel.WebApp", "Stenn.TestModel.WebApp\Stenn.TestModel.WebApp.csproj", "{8EFD4162-B0DF-466F-B0EA-FA2A1DE9107C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.IntegrationTests", "Stenn.TestModel.IntegrationTests\Stenn.TestModel.IntegrationTests.csproj", "{330B9741-2EB5-424A-B452-9BE11DDCD2D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.TestModel.IntegrationTests", "Stenn.TestModel.IntegrationTests\Stenn.TestModel.IntegrationTests.csproj", "{330B9741-2EB5-424A-B452-9BE11DDCD2D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Web", "Stenn.AppData.Web\Stenn.AppData.Web.csproj", "{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,10 @@ Global
 		{330B9741-2EB5-424A-B452-9BE11DDCD2D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{330B9741-2EB5-424A-B452-9BE11DDCD2D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{330B9741-2EB5-424A-B452-9BE11DDCD2D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

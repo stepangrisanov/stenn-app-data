@@ -1,27 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Stenn.TestModel.Domain.AppService.Tests;
+using Stenn.AppData.Contracts;
+using System.IO;
+using System.Threading.Tasks;
 
-namespace Stenn.TestModel.WebApp.Controllers
+namespace Stenn.AppData.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TestServiceController : ControllerBase
+    public abstract class BaseAppServiceController<TService, TBaseEntity> : Controller where TService : IAppDataService<TBaseEntity> where TBaseEntity : IAppDataEntity
     {
-        private readonly ITestModelDataService _service;
+        private readonly TService _service;
 
-        public TestServiceController(ITestModelDataService service)
+        public BaseAppServiceController(TService service)
         {
             _service = service;
         }
 
-        [HttpGet("[action]")]
-        public ActionResult Hello()
-        {
-            return Content("Hello world");
-        }
-
         [HttpPost("[action]")]
-        public async Task<IActionResult> ExecuteSerializedExpression()
+        public virtual async Task<IActionResult> ExecuteSerializedExpression()
         {
             try
             {

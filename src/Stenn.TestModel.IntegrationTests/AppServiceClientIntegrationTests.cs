@@ -1,17 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using Stenn.TestModel.WebApp;
+using Stenn.AppData;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
-using FluentAssertions;
 using Stenn.TestModel.Domain.Tests;
-using Microsoft.EntityFrameworkCore;
+using Stenn.TestModel.WebApp;
 using System.Linq.Expressions;
-using Stenn.AppData;
-using Microsoft.Extensions.DependencyInjection;
-using FluentAssertions.Common;
-using System.Reflection.Metadata.Ecma335;
-using System.Net.Http;
 
 namespace Stenn.TestModel.IntegrationTests
 {
@@ -33,7 +29,7 @@ namespace Stenn.TestModel.IntegrationTests
 
         protected readonly CancellationToken TestCancellationToken = CancellationToken.None;
 
-        private readonly WebApplicationFactory<Program> _applicationFactory = new WebApplicationFactory<Program>();
+        private readonly WebApplicationFactory<Program> _applicationFactory = new();
 
         private HttpClient GetHttpClient(string? uri = null)
         { 
@@ -78,7 +74,7 @@ namespace Stenn.TestModel.IntegrationTests
 
             services.AddTestModelAppDataService(connString);
 
-            services.AddTransient(i => GetHttpClient("TestService/ExecuteSerializedExpression"));
+            services.AddTransient(i => GetHttpClient("AppDataService/ExecuteSerializedExpression"));
             services.AddTransient<TestModelClient>();
 
             return services;
@@ -91,7 +87,7 @@ namespace Stenn.TestModel.IntegrationTests
         public async Task GetIndexTest()
         {
             var hpptClient = GetHttpClient();
-            var response = await hpptClient.GetAsync("/TestService/Hello", TestCancellationToken);
+            var response = await hpptClient.GetAsync("/AppDataService/Hello", TestCancellationToken);
             response.EnsureSuccessStatusCode();
         }
 
@@ -181,7 +177,7 @@ namespace Stenn.TestModel.IntegrationTests
             var param = Expression.Parameter(typeof(object), "service");
             Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, param);
 
-            var response = httpClient.PostAsync("/TestService/ExecuteSerializedExpression", new StringContent(SerializeExpression(le))).Result;
+            var response = httpClient.PostAsync("/AppDataService/ExecuteSerializedExpression", new StringContent(SerializeExpression(le))).Result;
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
