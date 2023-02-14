@@ -1,3 +1,4 @@
 ﻿using Stenn.PerformanceTests;
 
-CompareSerializatorsTests.Run();
+//CompareSerializatorsTests.Run();
+SerializeVsSerializeAsyncTests.Run();
