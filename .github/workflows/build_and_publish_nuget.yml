@@ -41,7 +41,7 @@ jobs:
         run: dotnet msbuild -t:Build '-p:Configuration=${{ env.BUILD_CONFIGURATION }};PatchNumSuffix=${{ github.event.inputs.PATCH_NUM_SUFFIX }}' ${{ env.PROJECT_PATH }}
 
       - name: 'Pack'
-        run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }} '-p:PatchNumSuffix=${{ github.event.inputs.PATCH_NUM_SUFFIX }}'
+        run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration ${{ env.BUILD_CONFIGURATION }} '-p:PublishDir=${{ env.PACKAGE_OUTPUT_DIRECTORY }}' '-p:PatchNumSuffix=${{ github.event.inputs.PATCH_NUM_SUFFIX }}'
 
       - name: 'Push packages'
         run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg -k ${{ secrets.NUGET_ORG_API_KEY }} -s ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
