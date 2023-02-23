@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Stenn.TestModel.Domain.AppService.Tests.Projections
 {
     internal abstract class TestModelDataProjection<T> : ITestModelDataProjection<T> where T : class, ITestModelEntity

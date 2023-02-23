@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj" />
+        <ProjectReference Include="..\Stenn.AppData.Server\Stenn.AppData.Server.csproj" />
     </ItemGroup>
 
 </Project>

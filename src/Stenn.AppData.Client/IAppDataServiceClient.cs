@@ -1,13 +1,15 @@
 ﻿using System.Linq.Expressions;
+using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData.Client
 {
+    public interface IAppDataServiceClient<in TBaseEntity> : IAppDataServiceClient
+        where TBaseEntity : IAppDataEntity
+    {
+    }
+
     public interface IAppDataServiceClient
     {
-        internal T? Deserialize<T>(byte[] bytes);
-
-        internal byte[]? ExecuteRemote(string serializedExpression);
-
         internal TResult Execute<TResult>(Expression expression);
     }
 }

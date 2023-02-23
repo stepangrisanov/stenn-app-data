@@ -1,10 +1,11 @@
-using System;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData;
+using Stenn.AppData.Client;
 using Stenn.AppData.EntityFrameworkCore.SqlServer;
 using Stenn.AppData.Mock;
+using Stenn.AppData.Server;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using Stenn.TestModel.Domain.AppService.Tests.Projections;
 
@@ -17,16 +18,31 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         /// </summary>
         /// <param name="services"></param>
         /// <param name="connectionString"></param>
-        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
-        public static IServiceCollection AddTestModelAppDataService(this IServiceCollection services, string connectionString, Func<MethodInfo, bool> expressionValidationFunc = null)
+        public static IServiceCollection AddTestModelAppDataServiceV1(this IServiceCollection services, string connectionString)
         {
             services.AddAppDataServiceSqlServer<ITestModelEntity, ITestModelDataService,
-                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitProjections, expressionValidationFunc: expressionValidationFunc);
+                TestModelDataService, TestModelAppDataServiceDbContext>(connectionString, InitProjections);
 
             return services;
         }
 
+
+        /// <summary>
+        /// Register public api data service <see cref="IAppDataServiceServer{ITestModelEntity}"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="connectionString"></param>
+        /// <param name="expressionValidationFunc"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddTestModelAppDataServiceServer(this IServiceCollection services, string connectionString,
+            Func<MethodInfo, bool> expressionValidationFunc = null)
+        {
+            services.AddTestModelAppDataServiceV1(connectionString);
+            services.AddAppDataServiceServer<ITestModelEntity, ITestModelDataService>(expressionValidationFunc);
+
+            return services;
+        }
 
         /// <summary>
         /// Register mock of public api data service <see cref="ITestModelDataService"/>
@@ -46,19 +62,18 @@ namespace Stenn.TestModel.Domain.AppService.Tests
         }
 
         /// <summary>
-        /// Register public api data service client <see cref="ITestModelDataService"/>
+        /// Register public api data service client <see cref="ITestModelDataService"/>. V2 
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="initClient"></param>
         /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
-        public static IServiceCollection AddTestModelAppDataServiceClient(this IServiceCollection services, Func<MethodInfo, bool> expressionValidationFunc = null)
+        public static IServiceCollection AddTestModelAppDataService(this IServiceCollection services, Action<HttpClient> initClient,
+            Func<MethodInfo, bool> expressionValidationFunc = null)
         {
-            services.AddScoped<TestModelClient>();
-
-            if (expressionValidationFunc != null)
-            {
-                services.AddSingleton(new ExpressionTreeValidator<ITestModelEntity>(expressionValidationFunc));
-            }
+            services.AddAppDataServiceClient<ITestModelEntity>(
+                (_, client) => initClient(client),
+                expressionValidationFunc);
 
             return services;
         }

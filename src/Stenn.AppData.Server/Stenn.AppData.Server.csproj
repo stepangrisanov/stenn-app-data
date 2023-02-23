@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Common server implementations for App Data Services</Description>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Stenn.AppData.Mock" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj" />
+    <ProjectReference Include="..\Stenn.AppData.Expressions\Stenn.AppData.Expressions.csproj" />
+  </ItemGroup>
+
+</Project>

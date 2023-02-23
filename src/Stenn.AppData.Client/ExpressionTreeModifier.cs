@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Stenn.AppData.Client
 {
@@ -24,7 +23,7 @@ namespace Stenn.AppData.Client
             return serviceCall;
         }
 
-        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        private static bool IsSubclassOfRawGeneric(Type generic, Type? toCheck)
         {
             while (toCheck != null && toCheck != typeof(object))
             {

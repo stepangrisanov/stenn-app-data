@@ -7,35 +7,45 @@ namespace Stenn.TestModel.WebApp
     public partial class Program
     {
 #if NET6_0
-        protected const string DBName = "test-appdata-service_net6";
+        private const string DBName = "test-appdata-service_net6";
 #elif NET7_0
         protected const string DBName = "test-appdata-service_net7";
 #elif NET8_0
         protected const string DBName = "test-appdata-service_net8";
 #endif
 
-        protected static string GetConnectionString(string dbName)
+        private static string GetConnectionString()
         {
-            return $@"Data Source=.\SQLEXPRESS;Initial Catalog={dbName};MultipleActiveResultSets=True;Integrated Security=SSPI;Encrypt=False";
+            return $@"Data Source=.\SQLEXPRESS;Initial Catalog={DBName};MultipleActiveResultSets=True;Integrated Security=SSPI;Encrypt=False";
+        }
+
+        internal static DbContext GetDbContext()
+        {
+            var services = new ServiceCollection();
+            var connString = GetConnectionString();
+            AddPersistanceDbContext(services, connString);
+            return services.BuildServiceProvider().GetRequiredService<TestModelDbContext>();
+        }
+
+        private static void AddPersistanceDbContext(IServiceCollection services, string connString)
+        {
+            services.AddDbContext<TestModelDbContext>(builder =>
+            {
+                builder.UseSqlServer(connString);
+            });
         }
 
         public static void Main(string[] args)
         {
-
-
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
+            var connString = GetConnectionString();
+            builder.Services.AddTestModelAppDataServiceServer(connString);
+            AddPersistanceDbContext(builder.Services, connString);
+            
             builder.Services.AddControllers();
-
-            var connString = GetConnectionString(DBName);
-            builder.Services.AddDbContext<TestModelDbContext>(builder =>
-            {
-                builder.UseSqlServer(connString);
-            });
-
-            builder.Services.AddTestModelAppDataService(connString);
 
             var app = builder.Build();
 

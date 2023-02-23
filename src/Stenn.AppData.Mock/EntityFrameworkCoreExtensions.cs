@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using System;
 using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData.Mock

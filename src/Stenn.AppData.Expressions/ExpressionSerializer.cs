@@ -1,10 +1,8 @@
-﻿using Nuqleon.Json.Serialization;
-using System;
-using System.Linq.Expressions.Bonsai.Serialization;
-
+﻿using System.Linq.Expressions.Bonsai.Serialization;
+using Nuqleon.Json.Serialization;
 using Json = Nuqleon.Json.Expressions;
 
-namespace Stenn.AppData
+namespace Stenn.AppData.Expressions
 {
     public class ExpressionSerializer : BonsaiExpressionSerializer
     {

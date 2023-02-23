@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
@@ -14,13 +12,11 @@ namespace Stenn.AppData.EntityFrameworkCore
         /// <param name="services"></param>
         /// <param name="initDbContext"></param>
         /// <param name="initProjections"></param>
-        /// <param name="expressionValidationFunc"></param>
         /// <returns></returns>
         public static IServiceCollection AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation, TDbContext>(
             this IServiceCollection services,
             Action<IServiceProvider, DbContextOptionsBuilder> initDbContext,
-            Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
-            Func<MethodInfo, bool>? expressionValidationFunc = null)
+            Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -32,7 +28,9 @@ namespace Stenn.AppData.EntityFrameworkCore
             }
 
             services.AddDbContext<TDbContext>((p, b) => InitDbContext(p, b, initDbContext));
-            return services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(initProjections, expressionValidationFunc: expressionValidationFunc);
+            services.AddScoped<AppDataServiceDbContext<TBaseEntity>>(p => p.GetRequiredService<TDbContext>());
+            
+            return services.AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(initProjections);
         }
 
         private static void InitDbContext(IServiceProvider provider, DbContextOptionsBuilder builder,

@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Stenn.AppData.Contracts;
 
@@ -9,8 +7,7 @@ namespace Stenn.AppData
     {
         public static IServiceCollection AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(this IServiceCollection services,
             Action<AppDataServiceBuilder<TBaseEntity>>? initProjections = null,
-            Action<IServiceProvider>? beforeCreate = null,
-            Func<MethodInfo, bool>? expressionValidationFunc = null)
+            Action<IServiceProvider>? beforeCreate = null)
             where TBaseEntity : class, IAppDataEntity
             where TServiceContract : class, IAppDataService<TBaseEntity>
             where TServiceImplementation : class, TServiceContract
@@ -21,17 +18,12 @@ namespace Stenn.AppData
                 beforeCreate?.Invoke(provider);
                 return provider.GetRequiredService<TServiceImplementation>();
             });
-
+            services.AddScoped<IAppDataService<TBaseEntity>>(p => p.GetRequiredService<TServiceContract>());
+            
             if (initProjections != null)
             {
                 var appServiceBuilder = new DependencyInjectionAppDataServiceBuilder<TBaseEntity>(services);
                 initProjections(appServiceBuilder);
-            }
-
-            if (expressionValidationFunc != null)
-            {
-                //services.AddSingleton(new ExpressionValidationOptions<TBaseEntity> { validationFunc = expressionValidationFunc });
-                services.AddSingleton(new ExpressionTreeValidator<TBaseEntity>(expressionValidationFunc));
             }
 
             return services;

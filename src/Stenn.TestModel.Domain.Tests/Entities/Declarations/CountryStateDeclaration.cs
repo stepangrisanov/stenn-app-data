@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Stenn.Csv;
 
 namespace Stenn.TestModel.Domain.Tests.Entities.Declarations

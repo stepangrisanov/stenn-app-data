@@ -2,80 +2,75 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using Stenn.AppData;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
-using Stenn.TestModel.Domain.Tests;
 using Stenn.TestModel.WebApp;
 using System.Linq.Expressions;
+using Stenn.AppData.Contracts;
+using Stenn.AppData.Expressions;
+using Stenn.TestModel.IntegrationTests.HttpClientFactory;
 
 namespace Stenn.TestModel.IntegrationTests
 {
     [TestFixture]
     public class AppServiceClientIntegrationTests
     {
-#if NET6_0
-        protected const string DBName = "test-appdata-service_net6";
-#elif NET7_0
-        protected const string DBName = "test-appdata-service_net7";
-#elif NET8_0
-        protected const string DBName = "test-appdata-service_net8";
-#endif
-
-        protected static string GetConnectionString(string dbName)
+        private static DbContext GetDbContext()
         {
-            return $@"Data Source=.\SQLEXPRESS;Initial Catalog={dbName};MultipleActiveResultSets=True;Integrated Security=SSPI;Encrypt=False";
+            return Program.GetDbContext();
         }
 
-        protected readonly CancellationToken TestCancellationToken = CancellationToken.None;
+        private readonly CancellationToken TestCancellationToken = CancellationToken.None;
 
         private readonly WebApplicationFactory<Program> _applicationFactory = new();
 
         private HttpClient GetHttpClient(string? uri = null)
-        { 
+        {
             var client = _applicationFactory.CreateClient();
-            if (!string.IsNullOrEmpty(uri)) client.BaseAddress = new Uri(client.BaseAddress!, uri);
+            SetBaseAddress(client, uri);
             return client;
         }
 
-        private ServiceProvider? ServiceProvider { get; set; }
+        private static void SetBaseAddress(HttpClient client, string? uri)
+        {
+            if (!string.IsNullOrEmpty(uri))
+            {
+                client.BaseAddress = new Uri(client.BaseAddress!, uri);
+            }
+        }
 
-        private ITestModelDataService? AppDataService { get; set; }
+        private IServiceProvider ServiceProviderClient { get; set; } = null!;
+        private IAppDataService<ITestModelEntity> AppDataServiceClient { get; set; } = null!;
+        private IAppDataService<ITestModelEntity> AppDataServiceServer { get; set; } = null!;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
-            var serviceCollection = InitServices();
+            var serviceCollection = InitServicesClient();
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProviderClient = serviceCollection.BuildServiceProvider().CreateScope().ServiceProvider;
+            AppDataServiceClient = serviceProviderClient.GetRequiredService<IAppDataService<ITestModelEntity>>();
 
-            AppDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
-
-            var dbContext = ServiceProvider.GetRequiredService<TestModelDbContext>();
+            AppDataServiceServer = _applicationFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IAppDataService<ITestModelEntity>>();
+            
+            var dbContext = GetDbContext();
             await dbContext.Database.EnsureCreatedAsync(TestCancellationToken);
         }
 
         [OneTimeTearDown]
         public async Task OneTimeTearDown()
         {
-            var dbContext = ServiceProvider!.GetRequiredService<TestModelDbContext>();
+            var dbContext = GetDbContext();
             await dbContext.Database.EnsureDeletedAsync(TestCancellationToken);
         }
 
-        internal IServiceCollection InitServices(string dbName = DBName)
+        private IServiceCollection InitServicesClient()
         {
             var services = new ServiceCollection();
 
-            var connString = GetConnectionString(dbName);
-            services.AddDbContext<TestModelDbContext>(builder =>
-            {
-                builder.UseSqlServer(connString);
-            });
+            services.AddDelegateHttpClientFactory(_applicationFactory.GetHttpClientActivator());
 
-            services.AddTestModelAppDataService(connString);
-
-            services.AddTransient(i => GetHttpClient("AppDataService/ExecuteSerializedExpression"));
-            services.AddTransient<TestModelClient>();
+            services.AddTestModelAppDataService(client => SetBaseAddress(client, "/AppDataService/Query"));
 
             return services;
         }
@@ -86,8 +81,8 @@ namespace Stenn.TestModel.IntegrationTests
         [Test]
         public async Task GetIndexTest()
         {
-            var hpptClient = GetHttpClient();
-            var response = await hpptClient.GetAsync("/AppDataService/Hello", TestCancellationToken);
+            var httpClient = GetHttpClient("/AppDataService/Hello");
+            var response = await httpClient.GetAsync((string?)null, TestCancellationToken);
             response.EnsureSuccessStatusCode();
         }
 
@@ -97,71 +92,59 @@ namespace Stenn.TestModel.IntegrationTests
         [Test]
         public void ClientQueryTest()
         {
-            var expectedResult = AppDataService!.Query<TestModelCountry>().Take(5).ToList();
+            var expected = AppDataServiceServer.Query<TestModelCountry>().Take(5).ToList();
+            var actual = AppDataServiceClient.Query<TestModelCountry>().Take(5).ToList();
 
-            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
-
-            var result = appDataClient.Query<TestModelCountry>().Take(5).ToList();
-
-            result.Should().BeEquivalentTo(expectedResult);
+            actual.Should().BeEquivalentTo(expected);
         }
-
+        
         /// <summary>
         /// AppDataClient builds expression and sends it to webApp. webApp executes expression on TestModelService to get data, serializes data and sends it back to client.
         /// </summary>
         [Test]
         public void ClientQueryWithAnonymousTypeTest()
         {
-            var expectedResult = AppDataService!.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
+            var expected = AppDataServiceServer.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
+            var actual = AppDataServiceClient.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
 
-            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
-
-            var result = appDataClient.Query<TestModelCountry>().Select(i => new { i.Name, Code = i.Alpha3Code }).ToList();
-
-            result.Should().BeEquivalentTo(expectedResult);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]
         public void ClientQueryIncludeTest()
         {
-            var expectedResult = AppDataService!.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
+            var expected = AppDataServiceServer.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
+            var actual = AppDataServiceClient.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
 
-            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
-
-            var result = appDataClient.Query<TestModelCountryState>().Take(5).Include(s => s.Country).ToList();
-
-            result.Should().BeEquivalentTo(expectedResult);
-            result.First().Country.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(expected);
+            actual.First().Country.Should().NotBeNull();
         }
 
         [Test]
         public async Task ClientQueryJoinTest()
         {
-            var expectedResult = await AppDataService!.Query<TestModelCountry>()
+            var expected = await AppDataServiceServer.Query<TestModelCountry>()
                 .Where(i => i.Id == "US")
-                .Join(AppDataService!.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
+                .Join(AppDataServiceServer.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
                 .ToListAsync(cancellationToken: TestCancellationToken);
 
-            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
+            var appDataClient = AppDataServiceClient;
 
-            var result = await appDataClient.Query<TestModelCountry>()
+            var actual = await appDataClient.Query<TestModelCountry>()
                 .Where(i => i.Id == "US")
                 .Join(appDataClient.Query<TestModelCountryState>(), c => c.Id, s => s.CountryId, (c, s) => new { Text = c.Name, Code = s.Description })
                 .ToListAsync(cancellationToken: TestCancellationToken);
 
-            result.Should().BeEquivalentTo(expectedResult);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Test]
         public void ClientQueryOrderTest()
         {
-            var expectedResult = AppDataService!.Query<TestModelCountryState>().OrderBy(i=>i.Description).Take(5).ToList();
+            var expected = AppDataServiceServer.Query<TestModelCountryState>().OrderBy(i => i.Description).Take(5).ToList();
+            var actual = AppDataServiceClient.Query<TestModelCountryState>().OrderBy(i => i.Description).Take(5).ToList();
 
-            var appDataClient = ServiceProvider!.GetRequiredService<TestModelClient>();
-
-            var result = appDataClient.Query<TestModelCountryState>().OrderBy(i => i.Description).Take(5).ToList();
-
-            result.Should().BeEquivalentTo(expectedResult);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         /// <summary>
@@ -175,13 +158,13 @@ namespace Stenn.TestModel.IntegrationTests
             var pathExpression = Expression.Constant(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
             var ex = Expression.Call(typeof(File), "ReadAllText", null, pathExpression);
             var param = Expression.Parameter(typeof(object), "service");
-            Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, param);
+            var le = Expression.Lambda<Func<object, string>>(ex, param);
 
-            var response = httpClient.PostAsync("/AppDataService/ExecuteSerializedExpression", new StringContent(SerializeExpression(le))).Result;
+            var response = httpClient.PostAsync("/AppDataService/Query", new StringContent(SerializeExpression(le)), TestCancellationToken).Result;
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         }
 
-        private string SerializeExpression(Expression expression)
+        private static string SerializeExpression(Expression expression)
         {
             var serializer = new ExpressionSerializer();
             var slimExpression = serializer.Lift(expression);

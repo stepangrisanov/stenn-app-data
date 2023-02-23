@@ -1,10 +1,7 @@
 using NUnit.Framework;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using Stenn.TestModel.Domain.Tests;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading;
 using FluentAssertions;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
@@ -27,7 +24,7 @@ namespace Stenn.AppData.Tests
         protected const string DBName = "test-appdata-service_net8";
 #endif
 
-        protected static string GetConnectionString(string dbName)
+        internal static string GetConnectionString(string dbName = DBName)
         {
             return $@"Data Source=.\SQLEXPRESS;Initial Catalog={dbName};MultipleActiveResultSets=True;Integrated Security=SSPI;Encrypt=False";
         }
@@ -66,7 +63,7 @@ namespace Stenn.AppData.Tests
                 builder.UseSqlServer(connString);
             });
 
-            services.AddTestModelAppDataService(connString);
+            services.AddTestModelAppDataServiceV1(connString);
 
             return services;
         }

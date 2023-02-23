@@ -1,16 +1,12 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-//using Nuqleon.Json.Expressions;
-using Stenn.AppData.Client;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Http;
+using Stenn.AppData.Contracts;
+using Stenn.AppData.Expressions;
+using Stenn.AppData.Server;
 
 namespace Stenn.AppData.Tests
 {
@@ -25,94 +21,86 @@ namespace Stenn.AppData.Tests
         protected const string DBName = "test-appdata-service_net8";
 #endif
 
-        protected static string GetConnectionString(string dbName)
+        protected static string GetConnectionString()
         {
-            return $@"Data Source=.\SQLEXPRESS;Initial Catalog={dbName};MultipleActiveResultSets=True;Integrated Security=SSPI;Encrypt=False";
+            return AppDataTests.GetConnectionString();
         }
 
-        private ITestModelDataService AppDataService { get; set; }
-        private TestModelClient AppDataServiceClient { get; set; }
-        private ServiceProvider ServiceProvider { get; set; }
-
         [Test]
-        public void ExpressionTreeValidatorWithConfiguration()
+        public void Server_WithConfiguration()
         {
             var services = new ServiceCollection();
-            var connString = GetConnectionString(DBName);
+            var connString = GetConnectionString();
 
             // provide additional expression validation function to allow additional methods
-            services.AddTestModelAppDataService(connString, (x) => x.Name == nameof(Directory.GetCurrentDirectory));
+            services.AddTestModelAppDataServiceServer(connString, x => x.Name == nameof(Directory.GetCurrentDirectory));
 
-            ServiceProvider = services.BuildServiceProvider();
-            AppDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
+            var serviceProvider = services.BuildServiceProvider();
+            var serviceServer = serviceProvider.GetRequiredService<IAppDataServiceServer<ITestModelEntity>>();
 
-            var result = BuildAndExecuteExpression();
+            var result = BuildAndExecuteExpression(serviceServer);
             result.Should().NotBeNull();
         }
 
         [Test]
-        public void ExpressionTreeValidatorWithoutConfiguration()
+        public void Server_WithoutConfiguration()
         {
             var services = new ServiceCollection();
-            var connString = GetConnectionString(DBName);
+            var connString = GetConnectionString();
 
             // no additional expression validation function provided
-            services.AddTestModelAppDataService(connString);
+            services.AddTestModelAppDataServiceServer(connString);
 
-            ServiceProvider = services.BuildServiceProvider();
-            AppDataService = ServiceProvider.GetRequiredService<ITestModelDataService>();
+            var serviceProvider = services.BuildServiceProvider();
+            var serviceServer = serviceProvider.GetRequiredService<IAppDataServiceServer<ITestModelEntity>>();
 
-            Action act = () => BuildAndExecuteExpression();
+            Action act = () => BuildAndExecuteExpression(serviceServer);
             act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("Expression contains not allowed method"));
         }
 
         [Test]
-        public void ExpressionTreeClientValidatorWithConfiguration()
+        public void Client_WithConfiguration()
         {
             var services = new ServiceCollection();
-            var connString = GetConnectionString(DBName);
 
             // provide additional expression validation function to allow additional methods
-            services.AddTestModelAppDataServiceClient((x) => x.Name == nameof(Directory.GetCurrentDirectory));
+            services.AddTestModelAppDataService(string.Empty, x => x.Name == nameof(Directory.GetCurrentDirectory));
 
-            services.AddHttpClient<TestModelClient>();
+            var serviceProvider = services.BuildServiceProvider();
+            var appDataServiceClient = serviceProvider.GetRequiredService<IAppDataService<ITestModelEntity>>();
 
-            ServiceProvider = services.BuildServiceProvider();
-            AppDataServiceClient = ServiceProvider.GetRequiredService<TestModelClient>();
-
-            Action act = () => AppDataServiceClient.Query<TestModelCountry>().Select(x => new { Text = Directory.GetCurrentDirectory() }).First();
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            Action act = () => appDataServiceClient.Query<TestModelCountry>().Select(x => new { Text = Directory.GetCurrentDirectory() }).First();
+            
             // this exception happens when sending data, which means validation passed
             act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("An invalid request URI was provided"));
         }
 
         [Test]
-        public void ExpressionTreeClientValidatorWithoutConfiguration()
+        public void Client_WithoutConfiguration()
         {
             var services = new ServiceCollection();
-            var connString = GetConnectionString(DBName);
 
             // no additional expression validation function provided
-            services.AddTestModelAppDataServiceClient();
+            services.AddTestModelAppDataService(string.Empty);
 
-            services.AddHttpClient<TestModelClient>();
+            var serviceProvider = services.BuildServiceProvider();
+            var appDataServiceClient = serviceProvider.GetRequiredService<IAppDataService<ITestModelEntity>>();
 
-            ServiceProvider = services.BuildServiceProvider();
-            AppDataServiceClient = ServiceProvider.GetRequiredService<TestModelClient>();
-
-            Action act = () => AppDataServiceClient.Query<TestModelCountry>().Select(x => new { Text = Directory.GetCurrentDirectory() }).First();
+            Action act = () => appDataServiceClient.Query<TestModelCountry>().Select(x => new { Text = Directory.GetCurrentDirectory() }).First();
             act.Should().Throw<InvalidOperationException>().Where(e => e.Message.StartsWith("Expression contains not allowed method"));
         }
 
-        private string BuildAndExecuteExpression()
+        private static string BuildAndExecuteExpression(IAppDataServiceServer serviceServer)
         {
             var ex = Expression.Call(typeof(Directory), "GetCurrentDirectory", null, null);
             var param = Expression.Parameter(typeof(object), "service");
-            Expression<Func<object, string>> le = Expression.Lambda<Func<object, string>>(ex, param);
+            var le = Expression.Lambda<Func<object, string>>(ex, param);
 
             var serializer = new ExpressionSerializer();
             var slimExpression = serializer.Lift(le);
             var bonsai = serializer.Serialize(slimExpression);
-            var jsonResult = AppDataService.ExecuteSerializedQuery(bonsai);
+            var jsonResult = serviceServer.ExecuteSerializedQuery(bonsai);
             var result = System.Text.Json.JsonSerializer.Deserialize<string>(jsonResult);
             return result;
         }

@@ -76,7 +76,7 @@ namespace Stenn.PerformanceTests
                 builder.UseSqlServer(connString);
             });
 
-            services.AddTestModelAppDataService(connString);
+            services.AddTestModelAppDataServiceV1(connString);
 
             return services;
         }

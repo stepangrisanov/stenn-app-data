@@ -14,7 +14,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Stenn.AppData.EntityFrameworkCore\Stenn.AppData.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Stenn.AppData.Expressions\Stenn.AppData.Expressions.csproj" />
     <ProjectReference Include="..\Stenn.AppData.Mock\Stenn.AppData.Mock.csproj" />
+    <ProjectReference Include="..\Stenn.AppData.Server\Stenn.AppData.Server.csproj" />
     <ProjectReference Include="..\Stenn.AppData\Stenn.AppData.csproj" />
     <ProjectReference Include="..\Stenn.AppData.EntityFrameworkCore.SqlServer\Stenn.AppData.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\Stenn.TestModel.Domain.AppService.Tests\Stenn.TestModel.Domain.AppService.Tests.csproj" />

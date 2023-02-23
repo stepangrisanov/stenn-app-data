@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <PackageOutputPath>$(MSBuildThisFileDirectory)..\..\bin\Packages</PackageOutputPath>

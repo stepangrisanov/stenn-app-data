@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Stenn.AppData.Client
+﻿namespace Stenn.AppData.Client
 {
     internal static class TypeSystem
     {

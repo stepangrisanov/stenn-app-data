@@ -76,7 +76,7 @@ namespace Stenn.PerformanceTests
                 builder.UseSqlServer(connString);
             });
 
-            services.AddTestModelAppDataService(connString);
+            services.AddTestModelAppDataServiceV1(connString);
 
             return services;
         }
@@ -105,7 +105,7 @@ namespace Stenn.PerformanceTests
         public async Task<List<TestModelCountry>> SerializeJsonAsync()
         {
             var query = AppDataService.Query<TestModelCountry>().Take(NumberOfEntities);
-            using MemoryStream dataStream = new MemoryStream();
+            using var dataStream = new MemoryStream();
             await System.Text.Json.JsonSerializer.SerializeAsync(dataStream, query);
             dataStream.Position = 0;
             var result = await System.Text.Json.JsonSerializer.DeserializeAsync<List<TestModelCountry>>(dataStream);

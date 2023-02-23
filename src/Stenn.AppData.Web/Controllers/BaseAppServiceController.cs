@@ -1,29 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stenn.AppData.Contracts;
-using System.IO;
-using System.Threading.Tasks;
+using Stenn.AppData.Server;
 
 namespace Stenn.AppData.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public abstract class BaseAppServiceController<TService, TBaseEntity> : Controller where TService : IAppDataService<TBaseEntity> where TBaseEntity : IAppDataEntity
+    public abstract class BaseAppServiceController<TBaseEntity> : Controller 
+        where TBaseEntity : IAppDataEntity
     {
-        private readonly TService _service;
+        protected IAppDataServiceServer<TBaseEntity> Service { get; }
 
-        public BaseAppServiceController(TService service)
+        protected BaseAppServiceController(IAppDataServiceServer<TBaseEntity> service)
         {
-            _service = service;
+            Service = service;
         }
 
-        [HttpPost("[action]")]
-        public virtual async Task<IActionResult> ExecuteSerializedExpression()
+        protected virtual async Task<IActionResult> DoQuery()
         {
             try
             {
                 var reader = new StreamReader(Request.Body);
                 var serializedQuery = await reader.ReadToEndAsync();
-                var bytes = _service.ExecuteSerializedQuery(serializedQuery);
+                var bytes = Service.ExecuteSerializedQuery(serializedQuery);
                 return File(bytes, "application/octet-stream");
             }
             catch

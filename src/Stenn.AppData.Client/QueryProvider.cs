@@ -1,12 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using System;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
-
-#nullable disable
 
 namespace Stenn.AppData.Client
 {
@@ -17,7 +11,8 @@ namespace Stenn.AppData.Client
     {
         private readonly IAppDataServiceClient _client;
 
-        public QueryProvider(IAppDataServiceClient client) : base(new QueryCompilerMock())
+        public QueryProvider(IAppDataServiceClient client) 
+            : base(new QueryCompilerMock())
         {
             _client = client;
         }
@@ -28,7 +23,7 @@ namespace Stenn.AppData.Client
 
             try
             {
-                return (IQueryable)Activator.CreateInstance(typeof(Query<>).MakeGenericType(elementType), new object[] { this, expression });
+                return (IQueryable)Activator.CreateInstance(typeof(Query<>).MakeGenericType(elementType), this, expression)!;
             }
             catch (TargetInvocationException tie)
             {
@@ -50,32 +45,6 @@ namespace Stenn.AppData.Client
         public override TResult Execute<TResult>(Expression expression)
         {
             return _client.Execute<TResult>(expression);
-        }
-    }
-
-    /// <summary>
-    /// This class only needed to be passed in EntityQueryProvider, no methods should ever be called
-    /// </summary>
-    internal class QueryCompilerMock : IQueryCompiler
-    {
-        public Func<QueryContext, TResult> CreateCompiledAsyncQuery<TResult>(Expression query)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Func<QueryContext, TResult> CreateCompiledQuery<TResult>(Expression query)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TResult Execute<TResult>(Expression query)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TResult ExecuteAsync<TResult>(Expression query, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
         }
     }
 }

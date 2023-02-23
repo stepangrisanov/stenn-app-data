@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Stenn.AppData;
 
 namespace Stenn.TestModel.Domain.AppService.Tests
@@ -7,9 +6,8 @@ namespace Stenn.TestModel.Domain.AppService.Tests
     {
         /// <inheritdoc />
         public TestModelDataService(TestModelAppDataServiceDbContext dbContext,
-            IEnumerable<IAppDataProjection<ITestModelEntity>> projections,
-            ExpressionTreeValidator<ITestModelEntity> expressionValidator = null)
-            : base(dbContext, projections, expressionValidator)
+            IEnumerable<IAppDataProjection<ITestModelEntity>> projections)
+            : base(dbContext, projections)
         {
         }
     }

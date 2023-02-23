@@ -1,42 +1,22 @@
 ﻿using Stenn.AppData.Contracts;
-using System;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Http;
 using System.Text.Json;
+using Stenn.AppData.Expressions;
 
 #nullable disable
 
 namespace Stenn.AppData.Client
 {
-    public class AppDataServiceClient<TBaseEntity> : IAppDataService<TBaseEntity>, IAppDataServiceClient where TBaseEntity : class, IAppDataEntity
+    public sealed class AppDataServiceClient<TBaseEntity> : IAppDataServiceClient<TBaseEntity>
+        where TBaseEntity : class, IAppDataEntity
     {
-        private HttpClient _httpClient;
-
+        private readonly HttpClient _httpClient;
         private readonly ExpressionTreeValidator<TBaseEntity> _expressionValidator;
 
         public AppDataServiceClient(HttpClient httpClient, ExpressionTreeValidator<TBaseEntity> expressionValidator = null)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _expressionValidator = expressionValidator ?? new ExpressionTreeValidator<TBaseEntity>();
-        }
-
-        public IQueryable<T> Query<T>() where T : class, TBaseEntity
-        {
-            return new Query<T>(this);
-        }
-
-        public T Deserialize<T>(byte[] bytes)
-        {
-            return JsonSerializer.Deserialize<T>(bytes);
-        }
-
-        public byte[] ExecuteRemote(string serializedExpression)
-        {
-            // no requestUri passed. httpClient's base address should already be configured to use correct uri
-            var response = _httpClient.PostAsync(string.Empty, new StringContent(serializedExpression)).Result;
-            response.EnsureSuccessStatusCode();
-            return response.Content.ReadAsByteArrayAsync().Result;
         }
 
         public TResult Execute<TResult>(Expression expression)
@@ -64,12 +44,20 @@ namespace Stenn.AppData.Client
             return result!;
         }
 
-        public byte[] ExecuteSerializedQuery(string bonsai)
+        private static T Deserialize<T>(byte[] bytes)
         {
-            throw new NotImplementedException();
+            return JsonSerializer.Deserialize<T>(bytes);
         }
 
-        protected Expression ValidateExpression(Expression expression)
+        private byte[] ExecuteRemote(string serializedExpression)
+        {
+            // no requestUri passed. httpClient's base address should already be configured to use correct uri
+            var response = _httpClient.PostAsync((string)null, new StringContent(serializedExpression)).Result;
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadAsByteArrayAsync().Result;
+        }
+
+        private Expression ValidateExpression(Expression expression)
         {
             return _expressionValidator.Visit(expression);
         }

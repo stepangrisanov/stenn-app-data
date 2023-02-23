@@ -49,6 +49,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stenn.TestModel.Integration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Web", "Stenn.AppData.Web\Stenn.AppData.Web.csproj", "{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Server", "Stenn.AppData.Server\Stenn.AppData.Server.csproj", "{BB04AB62-5B84-4C8A-BC5E-2AE427110699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.AppData.Expressions", "Stenn.AppData.Expressions\Stenn.AppData.Expressions.csproj", "{12DEB641-E666-4AA2-81BD-38847628BE4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +111,14 @@ Global
 		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{841D9EAD-C27C-4A0E-B461-EC9C0109B5E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB04AB62-5B84-4C8A-BC5E-2AE427110699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB04AB62-5B84-4C8A-BC5E-2AE427110699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB04AB62-5B84-4C8A-BC5E-2AE427110699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB04AB62-5B84-4C8A-BC5E-2AE427110699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12DEB641-E666-4AA2-81BD-38847628BE4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12DEB641-E666-4AA2-81BD-38847628BE4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12DEB641-E666-4AA2-81BD-38847628BE4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12DEB641-E666-4AA2-81BD-38847628BE4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

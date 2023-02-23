@@ -8,10 +8,12 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Stenn.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.Extensions.Http" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Stenn.AppData.Contracts\Stenn.AppData.Contracts.csproj" />
+        <ProjectReference Include="..\Stenn.AppData.Expressions\Stenn.AppData.Expressions.csproj" />
         <ProjectReference Include="..\Stenn.AppData\Stenn.AppData.csproj" />
     </ItemGroup>
 

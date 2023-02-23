@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Stenn.AppData.Server;
 using Stenn.AppData.Web.Controllers;
 using Stenn.TestModel.Domain.AppService.Tests;
 
 namespace Stenn.TestModel.WebApp.Controllers
 {
-    public class AppDataServiceController : BaseAppServiceController<ITestModelDataService, ITestModelEntity>
+    public class AppDataServiceController : AppServiceApiController<ITestModelEntity>
     {
-        private readonly ITestModelDataService _service;
-
-        public AppDataServiceController(ITestModelDataService service) : base(service)
+        public AppDataServiceController(IAppDataServiceServer<ITestModelEntity> service)
+            : base(service)
         {
-            _service = service;
         }
 
         [HttpGet("[action]")]
@@ -19,20 +18,13 @@ namespace Stenn.TestModel.WebApp.Controllers
             return Content("Hello world");
         }
 
+        /// <inheritdoc />
         [HttpPost("[action]")]
-        public override async Task<IActionResult> ExecuteSerializedExpression()
+        public override Task<IActionResult> Query()
         {
-            try
-            {
-                var reader = new StreamReader(Request.Body);
-                var serializedQuery = await reader.ReadToEndAsync();
-                var bytes = _service.ExecuteSerializedQuery(serializedQuery);
-                return File(bytes, "application/octet-stream");
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            return base.Query();
         }
     }
+    
+    
 }

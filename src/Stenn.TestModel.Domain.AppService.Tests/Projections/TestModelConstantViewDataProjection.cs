@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Stenn.EntityFrameworkCore;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
 
