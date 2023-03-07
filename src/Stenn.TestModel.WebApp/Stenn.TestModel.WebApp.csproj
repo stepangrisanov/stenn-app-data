@@ -9,6 +9,10 @@
     <ItemGroup>
         <InternalsVisibleTo Include="Stenn.TestModel.IntegrationTests" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json.Bson" />
+    </ItemGroup>
     
     <ItemGroup>
         <ProjectReference Include="..\Stenn.AppData.Server\Stenn.AppData.Server.csproj" />

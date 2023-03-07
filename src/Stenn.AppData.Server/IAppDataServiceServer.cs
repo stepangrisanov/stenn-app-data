@@ -9,6 +9,6 @@ namespace Stenn.AppData.Server
 
     public interface IAppDataServiceServer
     {
-        byte[] ExecuteSerializedQuery(string bonsai);
+        byte[] ExecuteSerializedQuery(string bonsai, string? serializerName = null);
     }
 }

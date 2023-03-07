@@ -12,11 +12,13 @@ namespace Stenn.AppData.Client
     {
         private readonly HttpClient _httpClient;
         private readonly ExpressionTreeValidator<TBaseEntity> _expressionValidator;
+        private readonly IAppDataSerializer _serializer;
 
-        public AppDataServiceClient(HttpClient httpClient, ExpressionTreeValidator<TBaseEntity> expressionValidator = null)
+        public AppDataServiceClient(HttpClient httpClient, IAppDataSerializerFactory appDataSerializerFactory, ExpressionTreeValidator<TBaseEntity> expressionValidator = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _expressionValidator = expressionValidator ?? new ExpressionTreeValidator<TBaseEntity>();
+            _serializer = appDataSerializerFactory.GetSerializer(); // TODO get serializer name from config and pass here
         }
 
         public TResult Execute<TResult>(Expression expression)
@@ -44,9 +46,9 @@ namespace Stenn.AppData.Client
             return result!;
         }
 
-        private static T Deserialize<T>(byte[] bytes)
+        private T Deserialize<T>(byte[] bytes)
         {
-            return JsonSerializer.Deserialize<T>(bytes);
+            return _serializer.Deserialize<T>(bytes);
         }
 
         private byte[] ExecuteRemote(string serializedExpression)

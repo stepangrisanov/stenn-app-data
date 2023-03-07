@@ -23,6 +23,9 @@ namespace Stenn.AppData.Server
             services.AddAppDataServiceExpressionValidator<TBaseEntity>(expressionValidationFunc);
             services.AddScoped<IAppDataServiceServer<TBaseEntity>, AppDataServiceServer<TBaseEntity, TServiceContract>>();
 
+            services.AddScoped<IAppDataSerializer, TextJsonAppDataSerializer>();
+            services.AddScoped<IAppDataSerializerFactory, AppDataSerializerFactory>();
+
             return services;
         }
     }

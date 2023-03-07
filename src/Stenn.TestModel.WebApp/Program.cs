@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Stenn.AppData.Contracts;
 using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.Tests;
 
@@ -44,7 +45,10 @@ namespace Stenn.TestModel.WebApp
             var connString = GetConnectionString();
             builder.Services.AddTestModelAppDataServiceServer(connString);
             AddPersistanceDbContext(builder.Services, connString);
-            
+
+            // adding custom serializer, it will be used by AppDataServiceServer if necessary
+            builder.Services.AddScoped<IAppDataSerializer, CustomAppDataSerializer>();
+
             builder.Services.AddControllers();
 
             var app = builder.Build();

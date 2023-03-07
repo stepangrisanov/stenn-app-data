@@ -11,17 +11,20 @@ namespace Stenn.AppData.Server
     {
         private readonly TAppDataService _service;
         private readonly ExpressionTreeValidator<TBaseEntity> _expressionValidator;
+        private readonly IAppDataSerializerFactory _serializerFactory;
 
         public AppDataServiceServer(TAppDataService service,
+            IAppDataSerializerFactory appDataSerializerFactory,
             ExpressionTreeValidator<TBaseEntity>? expressionValidator = null)
         {
             _service = service;
+            _serializerFactory = appDataSerializerFactory;
             _expressionValidator = expressionValidator ?? new ExpressionTreeValidator<TBaseEntity>();
         }
 
         // выполняет Expression полученный в сериализованном виде и возвращает сериализованный результат.
         // предполагается что expression имеет вид (AppDataService s) => s.Query<T>.OtherOperations()
-        public byte[] ExecuteSerializedQuery(string bonsai)
+        public byte[] ExecuteSerializedQuery(string bonsai, string? serializerName = null)
         {
             var serializer = new ExpressionSerializer();
 
@@ -44,9 +47,9 @@ namespace Stenn.AppData.Server
             }
 
             var serializedResponse = GetType()
-                .GetMethod(nameof(Serialize), BindingFlags.Static | BindingFlags.NonPublic)!
+                .GetMethod(nameof(Serialize), BindingFlags.Instance | BindingFlags.NonPublic)!
                 .MakeGenericMethod(resultType)
-                .Invoke(this, new[] { res! });
+                .Invoke(this, new[] { res!, serializerName });
 
             return (byte[])serializedResponse!;
         }
@@ -75,9 +78,10 @@ namespace Stenn.AppData.Server
             return false;
         }
 
-        private static byte[] Serialize<T>(T obj)
+        private byte[] Serialize<T>(T obj, string? serializerName = null)
         {
-            return JsonSerializer.SerializeToUtf8Bytes(obj);
+            var serializer = _serializerFactory.GetSerializer(serializerName);
+            return serializer.Serialize(obj);
         }
     }
 }

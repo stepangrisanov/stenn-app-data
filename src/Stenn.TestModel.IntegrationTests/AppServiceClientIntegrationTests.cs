@@ -9,6 +9,8 @@ using System.Linq.Expressions;
 using Stenn.AppData.Contracts;
 using Stenn.AppData.Expressions;
 using Stenn.TestModel.IntegrationTests.HttpClientFactory;
+using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Stenn.TestModel.IntegrationTests
 {
@@ -27,19 +29,25 @@ namespace Stenn.TestModel.IntegrationTests
         private HttpClient GetHttpClient(string? uri = null)
         {
             var client = _applicationFactory.CreateClient();
-            SetBaseAddress(client, uri);
+            SetBaseAddressAndHeader(client, uri);
             return client;
         }
 
-        private static void SetBaseAddress(HttpClient client, string? uri)
+        private static void SetBaseAddressAndHeader(HttpClient client, string? uri, string? serializerName = null)
         {
             if (!string.IsNullOrEmpty(uri))
             {
                 client.BaseAddress = new Uri(client.BaseAddress!, uri);
             }
+
+            if (!string.IsNullOrEmpty(serializerName))
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.ParseAdd($"application/octet-stream;serializer={serializerName}");
+            }
         }
 
-        private IServiceProvider ServiceProviderClient { get; set; } = null!;
+        //private IServiceProvider ServiceProviderClient { get; set; } = null!;
         private IAppDataService<ITestModelEntity> AppDataServiceClient { get; set; } = null!;
         private IAppDataService<ITestModelEntity> AppDataServiceServer { get; set; } = null!;
 
@@ -70,7 +78,7 @@ namespace Stenn.TestModel.IntegrationTests
 
             services.AddDelegateHttpClientFactory(_applicationFactory.GetHttpClientActivator());
 
-            services.AddTestModelAppDataService(client => SetBaseAddress(client, "/AppDataService/Query"));
+            services.AddTestModelAppDataService(client => SetBaseAddressAndHeader(client, "/AppDataService/Query"));
 
             return services;
         }
@@ -143,6 +151,26 @@ namespace Stenn.TestModel.IntegrationTests
         {
             var expected = AppDataServiceServer.Query<TestModelCountryState>().OrderBy(i => i.Description).Take(5).ToList();
             var actual = AppDataServiceClient.Query<TestModelCountryState>().OrderBy(i => i.Description).Take(5).ToList();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        /// <summary>
+        /// AppDataClient builds expression and sends it to webApp. webApp executes expression on TestModelService to get data, serializes data and sends it back to client.
+        /// </summary>
+        [Test]
+        public void ClientQueryWithCustomSerializerTest()
+        {
+            var services = new ServiceCollection();
+            services.AddDelegateHttpClientFactory(_applicationFactory.GetHttpClientActivator());
+            services.AddTestModelAppDataService(client => SetBaseAddressAndHeader(client, "/AppDataService/Query", nameof(CustomAppDataSerializer)));
+            services.AddScoped<IAppDataSerializer, CustomAppDataSerializer>();
+
+            var serviceProviderClient = services.BuildServiceProvider().CreateScope().ServiceProvider;
+            var AppDataServiceClient = serviceProviderClient.GetRequiredService<IAppDataService<ITestModelEntity>>();
+
+            var expected = AppDataServiceServer.Query<TestModelCountry>().Take(5).ToList();
+            var actual = AppDataServiceClient.Query<TestModelCountry>().Take(5).ToList();
 
             actual.Should().BeEquivalentTo(expected);
         }

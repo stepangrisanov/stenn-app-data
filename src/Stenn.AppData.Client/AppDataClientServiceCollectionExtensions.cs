@@ -25,6 +25,9 @@ namespace Stenn.AppData.Client
             services.AddScoped<IAppDataServiceClient<TBaseEntity>, AppDataServiceClient<TBaseEntity>>();
             services.AddScoped<IAppDataService<TBaseEntity>, AppDataServiceClientWrapper<TBaseEntity>>();
 
+            services.AddScoped<IAppDataSerializer, TextJsonAppDataSerializer>();
+            services.AddScoped<IAppDataSerializerFactory, AppDataSerializerFactory>();
+
             if (initClient != null)
             {
                 services.AddHttpClient<IAppDataServiceClient<TBaseEntity>, AppDataServiceClient<TBaseEntity>>(initClient);
