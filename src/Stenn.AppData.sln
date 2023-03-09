@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.AppService.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.AppService.IntegrationTests", "Stenn.TestModel.AppService.IntegrationTests\Stenn.TestModel.AppService.IntegrationTests.csproj", "{FB292B1F-0A04-4BA0-91A5-5100B9068BDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stenn.TestModel.AppService.Contracts", "Stenn.TestModel.AppService.Contracts\Stenn.TestModel.AppService.Contracts.csproj", "{2F088C21-80A8-4754-9522-F1D72D49BF64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,10 @@ Global
 		{FB292B1F-0A04-4BA0-91A5-5100B9068BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB292B1F-0A04-4BA0-91A5-5100B9068BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB292B1F-0A04-4BA0-91A5-5100B9068BDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F088C21-80A8-4754-9522-F1D72D49BF64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F088C21-80A8-4754-9522-F1D72D49BF64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F088C21-80A8-4754-9522-F1D72D49BF64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F088C21-80A8-4754-9522-F1D72D49BF64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{7791C211-508B-46C1-94DE-C61D9080CB19} = {4D0A2092-01C6-4396-A117-31263DD64D57}
 		{626B501E-EBCE-4D45-B4B4-7D2CCF687CE2} = {4D0A2092-01C6-4396-A117-31263DD64D57}
 		{FB292B1F-0A04-4BA0-91A5-5100B9068BDE} = {4D0A2092-01C6-4396-A117-31263DD64D57}
+		{2F088C21-80A8-4754-9522-F1D72D49BF64} = {4D0A2092-01C6-4396-A117-31263DD64D57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {90A61DCC-4469-4042-B534-C37020F4A7EF}

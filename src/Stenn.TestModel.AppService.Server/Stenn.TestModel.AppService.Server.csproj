@@ -6,7 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stenn.TestModel.AppService.Client\Stenn.TestModel.AppService.Client.csproj" />
+    <ProjectReference Include="..\Stenn.TestModel.AppService.Contracts\Stenn.TestModel.AppService.Contracts.csproj" />
     <ProjectReference Include="..\Stenn.TestModel.Domain.Tests\Stenn.TestModel.Domain.Tests.csproj" />
   </ItemGroup>
 

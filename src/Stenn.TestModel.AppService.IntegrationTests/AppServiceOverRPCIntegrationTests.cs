@@ -4,11 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Seedwork.Configuration.Contracts;
 using Seedwork.Network.Core.Abstractions;
-using Seedwork.Network.Rpc;
 using Seedwork.Network.Rpc.Http;
 using Seedwork.Network.Rpc.Http.AspNet;
-using Stenn.TestModel.AppService.Client.Models;
+using Stenn.AppData.Contracts;
+using Stenn.TestModel.AppService.Client;
+using Stenn.TestModel.AppService.Contracts;
+using Stenn.TestModel.AppService.Contracts.Models;
 using Stenn.TestModel.AppService.Web;
+using Stenn.TestModel.Domain.Tests.Entities;
 
 namespace Stenn.TestModel.AppService.IntegrationTests
 {
@@ -24,7 +27,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
         private readonly WebApplicationFactory<Program> _applicationFactory = new();
 
-        protected IRemoteCallClient _client { get; set; } = null!;
+        protected IAppDataServiceClient<ITestServiceRequest, ITestServiceResponse> _testServiceClient { get; set; } = null!;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -33,7 +36,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             var serviceProviderClient = serviceCollection.BuildServiceProvider().CreateScope().ServiceProvider;
 
-            _client = serviceProviderClient.GetRequiredService<IRemoteCallClient>();
+            _testServiceClient = serviceProviderClient.GetRequiredService<IAppDataServiceClient<ITestServiceRequest, ITestServiceResponse>>();
 
             var dbContext = GetDbContext();
             await dbContext.Database.EnsureCreatedAsync(TestCancellationToken);
@@ -67,9 +70,11 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             services.AddSingleton(new EnvironmentConfig("RpcTests", "Test")); // add environment config
 
-            services.AddScoped<HttpClient>(c => GetHttpClient());
+            services.AddScoped(c => GetHttpClient());
             services.AddSingleton<IHttpEndpointDiscoverer, TestHttpEndpointDiscoverer>();
             services.AddAspNetRpcClient();
+
+            services.AddTestModelAppDataService();
 
             services.AddSingleton<IOperationContext>(new TestInitialOperationContext());
 
@@ -93,8 +98,9 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         [Test]
         public async Task ClientQueryTest()
         {
-            var response = await _client.CallAsync(new CountryRequest(), TestCancellationToken);
-            Assert.NotNull(response);
+            var expected = GetDbContext().Set<Country>().First();
+            var actual = await _testServiceClient.CallAsync(new CountryRequest(), TestCancellationToken); // intellisense will show error if request does not implement ITestServiceRequest
+            actual.Country.Should().BeEquivalentTo(expected);
         }
     }
 }

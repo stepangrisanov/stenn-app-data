@@ -3,6 +3,10 @@ using Seedwork.Configuration.Contracts;
 using Seedwork.Network.Rpc.Http.AspNet;
 using Stenn.TestModel.AppService.Server;
 using Stenn.TestModel.Domain.Tests;
+using Microsoft.Extensions.DependencyInjection;
+using Seedwork.DependencyInjection.Netcore;
+using Seedwork.Network.Core.Abstractions;
+using Seedwork.Logging;
 
 namespace Stenn.TestModel.AppService.Web
 {
@@ -44,12 +48,18 @@ namespace Stenn.TestModel.AppService.Web
 
             AddPersistanceDbContext(builder.Services, GetConnectionString());
 
+            builder.Services.AddSeedworkNetCoreDi();
+
             builder.Services.AddSingleton(new EnvironmentConfig("RpcTests", "Test")); // add environment config
 
             builder.Services.AddTestServiceRpcHandlers(); // register rpc handlers
 
             builder.Services.AddControllers()
-                .AddAspNetRpcServer();
+                            .AddNewtonsoftJson() // crucial for RPC serialization/deserialization
+                            .AddAspNetRpcServer();
+
+            builder.Services.AddScopedContext<ILogContext>();
+            builder.Services.AddScopedContext<IOperationContext>();
 
             var app = builder.Build();
 

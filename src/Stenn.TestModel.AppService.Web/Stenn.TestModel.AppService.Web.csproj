@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Newtonsoftjson" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Stenn.TestModel.AppService.Server\Stenn.TestModel.AppService.Server.csproj" />
   </ItemGroup>
 

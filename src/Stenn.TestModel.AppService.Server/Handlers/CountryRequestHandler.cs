@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Seedwork.Network.Rpc;
-using Stenn.TestModel.AppService.Client.Models;
+using Stenn.TestModel.AppService.Contracts.Models;
 using Stenn.TestModel.Domain.Tests;
 using Stenn.TestModel.Domain.Tests.Entities;
 using System.Threading;
@@ -20,8 +20,8 @@ namespace Stenn.TestModel.AppService.Server.Handlers
         public async Task<CountryResponse> HandleAsync(CountryRequest request, IRemoteCallContext<CountryRequest, CountryResponse> context, CancellationToken token)
         {
             var country = await _dbContext.Set<Country>().FirstAsync();
-            //return new CountryResponse { Country = country }; // be carefull showing entities. use DTOs with appropriate fields
-            return new CountryResponse { CountryId = 5 };
+            return new CountryResponse { Country = country }; // be carefull showing entities. use DTOs with appropriate fields
+            //return new CountryResponse { CountryId = 5 };
         }
     }
 }
