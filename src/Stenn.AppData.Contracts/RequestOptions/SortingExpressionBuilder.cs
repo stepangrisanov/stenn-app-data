@@ -13,7 +13,7 @@ namespace Stenn.AppData.Contracts.RequestOptions
             bool initialSort = true;
             foreach (var item in sortOptions.Sorting)
             {
-                source = source.OrderBy(item.FieldName, item.SortDirection == SortDirection.Ascending, initialSort);
+                source = source.OrderBy(item.FieldName, item.SortDirection == SortDirection.Descending, initialSort);
                 initialSort = false;
             }
 

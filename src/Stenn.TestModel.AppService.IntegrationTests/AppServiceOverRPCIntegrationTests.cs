@@ -233,7 +233,8 @@ namespace Stenn.TestModel.AppService.IntegrationTests
             };
 
             var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
-            actual.Countries.Should().BeEquivalentTo(expected);
+
+            actual.Countries.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }
 
         /// <summary>
@@ -254,21 +255,9 @@ namespace Stenn.TestModel.AppService.IntegrationTests
             var sw = new Stopwatch();
             sw.Start();
             
-            actual.Countries.Should().BeEquivalentTo(expected);
+            actual.Countries.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
             sw.Stop();
             Console.WriteLine(sw.ElapsedMilliseconds);
-        }
-
-        /// <summary>
-        /// Request country with two sortings
-        /// </summary>
-        [Test]
-        public async Task SortingAscDoubleTestOnlyDb()
-        {
-            //public static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> source, string orderByProperty, bool desc, bool initialSort)
-
-            var actual = await GetDbContext().Set<Country>().OrderBy(nameof(Country.NominalGnp), false, true).ToListAsync();
-            actual.Should().NotBeNull();
         }
 
         /// <summary>
@@ -292,7 +281,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             var actual = await GetDbContext().Set<Country>().OrderBy(sortOptions).Take(5).ToListAsync();
 
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }
     }
 }
