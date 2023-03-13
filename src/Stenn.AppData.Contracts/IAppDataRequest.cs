@@ -2,6 +2,6 @@
 {
     public interface IAppDataRequest
     {
-        //IAppDataRequestFilter Filter { get; set; } // TODO uncomment and implement later
+        IAppDataRequestOptions? RequestOptions { get; set; }
     }
 }

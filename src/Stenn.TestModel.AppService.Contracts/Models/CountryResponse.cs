@@ -5,7 +5,7 @@ namespace Stenn.TestModel.AppService.Contracts.Models
 {
     public class CountryResponse : IRemoteCallResponse<CountryRequest, CountryResponse>, ITestServiceResponse
     {
-        public Country Country { get; set; }
+        public IEnumerable<Country> Countries { get; set; }
 
         //public int CountryId { get; set; }
     }
