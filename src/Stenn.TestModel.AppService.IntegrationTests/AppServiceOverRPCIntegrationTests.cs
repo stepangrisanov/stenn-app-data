@@ -14,8 +14,6 @@ using Stenn.TestModel.AppService.Contracts;
 using Stenn.TestModel.AppService.Contracts.Models;
 using Stenn.TestModel.AppService.Web;
 using Stenn.TestModel.Domain.Tests.Entities;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Stenn.TestModel.AppService.IntegrationTests
 {
@@ -127,16 +125,17 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         /// Request country with Condition type Equals filter (and "Or" condition)
         /// </summary>
         [Test]
-        public async Task FilterConditionTypeEqualsTest()
+        [TestCase("CYP", "Chad")]
+        public async Task FilterConditionTypeEqualsTest(string alpha3code, string name)
         {
-            var expected = GetDbContext().Set<Country>().Where(i => i.Alpha3Code == "CYP" || i.Name == "Chad");
+            var expected = GetDbContext().Set<Country>().Where(i => i.Alpha3Code == alpha3code || i.Name == name);
 
             var filter = new Filter
             {
                 CurrentToken = new Or
                 {
-                    First = new Condition { FieldName = nameof(Country.Alpha3Code), ConditionType = ConditionType.Equals, RightValue = "CYP" },
-                    Second = new Condition { FieldName = nameof(Country.Name), ConditionType = ConditionType.Equals, RightValue = "Chad" },
+                    First = new Condition { FieldName = nameof(Country.Alpha3Code), ConditionType = ConditionType.Equals, RightValue = alpha3code },
+                    Second = new Condition { FieldName = nameof(Country.Name), ConditionType = ConditionType.Equals, RightValue = name },
                 }
             };
 
@@ -148,13 +147,14 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         /// Request country with Condition type Equals filter
         /// </summary>
         [Test]
-        public async Task FilterConditionTypeGreaterTest()
+        [TestCase(20_000)]
+        public async Task FilterConditionTypeGreaterTest(decimal GNPValue)
         {
-            var expected = GetDbContext().Set<Country>().Where(i => i.NominalGnp > 20_000m);
+            var expected = GetDbContext().Set<Country>().Where(i => i.NominalGnp > GNPValue);
 
             var filter = new Filter
             {
-                CurrentToken = new Condition { FieldName = nameof(Country.NominalGnp), ConditionType = ConditionType.Greater, RightValue = 20_000m }
+                CurrentToken = new Condition { FieldName = nameof(Country.NominalGnp), ConditionType = ConditionType.Greater, RightValue = GNPValue }
             };
 
             var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
@@ -165,13 +165,14 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         /// Request country with Condition type Equals filter
         /// </summary>
         [Test]
-        public async Task FilterConditionTypeLessTest()
+        [TestCase(20_000)]
+        public async Task FilterConditionTypeLessTest(decimal GNPValue)
         {
-            var expected = GetDbContext().Set<Country>().Where(i => i.NominalGnp < 20_000m);
+            var expected = GetDbContext().Set<Country>().Where(i => i.NominalGnp < GNPValue);
 
             var filter = new Filter
             {
-                CurrentToken = new Condition { FieldName = nameof(Country.NominalGnp), ConditionType = ConditionType.Less, RightValue = 20_000m }
+                CurrentToken = new Condition { FieldName = nameof(Country.NominalGnp), ConditionType = ConditionType.Less, RightValue = GNPValue }
             };
 
             var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
@@ -182,19 +183,20 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         /// Request country with ContainsCondition filter (and "And" condition)
         /// </summary>
         [Test]
-        public async Task FilterContainsConditionTest()
+        [TestCase(new string[] { "CYP", "USA", "ESP" }, new string[] { "Cyprus", "United States of America", "Taiwan" })]
+        public async Task FilterContainsConditionTest(string[] alpha3codeArray, string[] nameArray)
         {
             var expected = GetDbContext().Set<Country>().Where(
-                i => new string[] { "CYP", "USA", "ESP" }.Contains(i.Alpha3Code)
-                && new string[] { "Cyprus", "United States of America", "Taiwan" }.Contains(i.Name)
+                i => alpha3codeArray.Contains(i.Alpha3Code)
+                && nameArray.Contains(i.Name)
             );
 
             var filter = new Filter
             {
                 CurrentToken = new And
                 {
-                    First = new ContainsCondition { FieldName = nameof(Country.Alpha3Code), RightValue = new string[] { "CYP", "USA", "ESP" } },
-                    Second = new ContainsCondition { FieldName = nameof(Country.Name), RightValue = new string[] { "Cyprus", "United States of America", "Taiwan" } },
+                    First = new ContainsCondition { FieldName = nameof(Country.Alpha3Code), RightValue = alpha3codeArray },
+                    Second = new ContainsCondition { FieldName = nameof(Country.Name), RightValue = nameArray },
                 }
             };
 
@@ -227,10 +229,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         {
             var expected = GetDbContext().Set<Country>().OrderBy(i => i.NominalGnp);
 
-            var sortOptions = new SortOptions
-            {
-                Sorting = new List<SortItem> { new SortItem { FieldName = nameof(Country.NominalGnp) } }
-            };
+            var sortOptions = new SortOptions { new SortItem { FieldName = nameof(Country.NominalGnp) } };
 
             var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
 
@@ -245,41 +244,29 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         {
             var expected = await GetDbContext().Set<Country>().OrderBy(i => i.NominalGnp).ThenBy(i => i.Name).ToListAsync();
 
-            var sortOptions = new SortOptions
-            {
-                Sorting = new List<SortItem> { new SortItem { FieldName = nameof(Country.NominalGnp) }, new SortItem { FieldName = nameof(Country.Name) } }
-            };
+            var sortOptions = new SortOptions { new SortItem { FieldName = nameof(Country.NominalGnp) }, new SortItem { FieldName = nameof(Country.Name) } };
 
             var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
-
-            var sw = new Stopwatch();
-            sw.Start();
             
             actual.Countries.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds);
         }
 
         /// <summary>
-        /// Request country with two sortings
+        /// Request country with two sortings and pagination
         /// </summary>
         [Test]
-        public async Task SortingAscDoubleTestWithLimit()
+        [TestCase(10, 3)]
+        public async Task SortingAscDoubleTestWithLimit(int pageSize, int pageNumber)
         {
-            var expected = GetDbContext().Set<Country>().OrderBy(i => i.NominalGnp).ThenBy(i => i.Name).Take(5);
+            var expected = GetDbContext().Set<Country>().OrderBy(i => i.NominalGnp).ThenBy(i => i.Name).Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
-            var sortOptions = new SortOptions
+            var requestOptions = new RequestOptions
             {
-                Sorting = new List<SortItem> { new SortItem { FieldName = nameof(Country.NominalGnp) }, new SortItem { FieldName = nameof(Country.Name) } }
+                SortOptions = new SortOptions { new SortItem { FieldName = nameof(Country.NominalGnp) }, new SortItem { FieldName = nameof(Country.Name) } },
+                Paging = new PagingOptions(pageSize, pageNumber)
             };
 
-            var pagingOptions = new PagingOptions { Take = 5 };
-
-            /*var actual = await _testServiceClient.CallAsync(new CountryRequest {
-                RequestOptions = new RequestOptions { SortOptions = sortOptions, Paging = pagingOptions },
-            }, TestCancellationToken);*/
-
-            var actual = await GetDbContext().Set<Country>().OrderBy(sortOptions).Take(5).ToListAsync();
+            var actual = await GetDbContext().Set<Country>().ApplyOptions(requestOptions).ToListAsync();
 
             actual.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }

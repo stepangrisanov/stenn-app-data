@@ -4,7 +4,6 @@ using Stenn.AppData.Contracts.RequestOptions;
 using Stenn.TestModel.AppService.Contracts.Models;
 using Stenn.TestModel.Domain.Tests;
 using Stenn.TestModel.Domain.Tests.Entities;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,11 +21,7 @@ namespace Stenn.TestModel.AppService.Server.Handlers
 
         public async Task<CountryResponse> HandleAsync(CountryRequest request, IRemoteCallContext<CountryRequest, CountryResponse> context, CancellationToken token)
         {
-            var countries = await _dbContext.Set<Country>()
-                .Where(request.RequestOptions?.Filter)
-                .OrderBy(request.RequestOptions?.SortOptions)
-                .Paginate(request.RequestOptions?.Paging)
-                .ToListAsync();
+            var countries = await _dbContext.Set<Country>().ApplyOptions(request.RequestOptions).ToListAsync();
 
             return new CountryResponse { Countries = countries }; // be carefull showing entities. use DTOs with appropriate fields
         }

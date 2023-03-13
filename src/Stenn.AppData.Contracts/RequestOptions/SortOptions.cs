@@ -2,9 +2,8 @@
 
 namespace Stenn.AppData.Contracts.RequestOptions
 {
-    public class SortOptions
+    public class SortOptions : List<SortItem>
     {
-        public IEnumerable<SortItem>? Sorting { get; set; }
     }
 
     public class SortItem

@@ -6,21 +6,7 @@ namespace Stenn.AppData.Contracts.RequestOptions
 {
     public static class SortingExpressionBuilder
     {
-        public static IQueryable<TSource> OrderBy<TSource>(this IQueryable<TSource> source, SortOptions sortOptions)
-        {
-            if (sortOptions is null || sortOptions.Sorting is null) return source;
-
-            bool initialSort = true;
-            foreach (var item in sortOptions.Sorting)
-            {
-                source = source.OrderBy(item.FieldName, item.SortDirection == SortDirection.Descending, initialSort);
-                initialSort = false;
-            }
-
-            return source;
-        }
-
-        public static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> source, string orderByProperty, bool desc, bool initialSort)
+        internal static IQueryable<TEntity> ApplyOrder<TEntity>(this IQueryable<TEntity> source, string orderByProperty, bool desc, bool initialSort)
         {
             string command;
 

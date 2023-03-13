@@ -1,10 +1,20 @@
 ﻿namespace Stenn.AppData.Contracts.RequestOptions
 {
-    /// <summary>
-    /// This is just a placeholder, implementation to come
-    /// </summary>
     public class PagingOptions
     {
-        public int Take { get; set; }
+        public int PageSize { get; }
+        public int PageNumber { get; }
+
+        public PagingOptions()
+        {
+            PageNumber = 1;
+            PageSize = 10;
+        }
+
+        public PagingOptions(int pageSize, int pageNumber)
+        {
+            PageNumber = pageNumber < 1 ? 1 : pageNumber;
+            PageSize = pageSize;
+        }
     }
 }
