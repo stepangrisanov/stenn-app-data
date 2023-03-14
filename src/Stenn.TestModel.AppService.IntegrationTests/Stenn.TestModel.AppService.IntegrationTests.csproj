@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Stenn.TestModel.AppService.Client\Stenn.TestModel.AppService.Client.csproj" />
     <ProjectReference Include="..\Stenn.TestModel.AppService.Web\Stenn.TestModel.AppService.Web.csproj" />
   </ItemGroup>
 

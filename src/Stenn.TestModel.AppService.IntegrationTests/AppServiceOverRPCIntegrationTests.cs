@@ -1,26 +1,16 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using Seedwork.Configuration.Contracts;
-using Seedwork.DependencyInjection;
 using Seedwork.DependencyInjection.Netcore;
 using Seedwork.HttpClientHelpers;
-using Seedwork.Logging;
 using Seedwork.Network.Contracts.Rpc;
 using Seedwork.Network.Core.Abstractions;
-using Seedwork.Network.Infrastructure;
 using Seedwork.Network.Rpc;
 using Seedwork.Network.Rpc.Http;
-using Seedwork.Web;
 using Serilog.Events;
-using Stenn.AppData.Contracts;
 using Stenn.AppData.Contracts.RequestOptions;
-using Stenn.TestModel.AppService.Client;
-using Stenn.TestModel.AppService.Contracts;
 using Stenn.TestModel.AppService.Contracts.Models;
 using Stenn.TestModel.AppService.IntegrationTests.Logging;
 using Stenn.TestModel.AppService.Web;
@@ -42,7 +32,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
         protected readonly ICollection<LogEvent> TestsLogAccumulator = new List<LogEvent>();
 
-        protected IAppDataServiceClient<ITestServiceRequest, ITestServiceResponse> _testServiceClient { get; set; } = null!;
+        protected IRemoteCallClient _remoteCallClient { get; set; } = null!;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -51,7 +41,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             var serviceProviderClient = serviceCollection.BuildServiceProvider().CreateScope().ServiceProvider;
 
-            _testServiceClient = serviceProviderClient.GetRequiredService<IAppDataServiceClient<ITestServiceRequest, ITestServiceResponse>>();
+            _remoteCallClient = serviceProviderClient.GetRequiredService<IRemoteCallClient>();
 
             var dbContext = GetDbContext();
             await dbContext.Database.EnsureCreatedAsync(TestCancellationToken);
@@ -98,8 +88,6 @@ namespace Stenn.TestModel.AppService.IntegrationTests
             // only for integration testing. client factory which returns HttpClient configured to access app created using WebApplicationFactory
             services.AddSingleton<IHttpClientFactory>(i => new HttpClientFactoryMock(GetHttpClient()));
 
-            services.AddTestModelAppDataService();
-
             return services;
         }
 
@@ -121,7 +109,9 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         public async Task ClientQueryTest()
         {
             var expected = await GetDbContext().Set<Country>().ToListAsync();
-            var actual = await _testServiceClient.CallAsync(new CountryRequest(), TestCancellationToken); // intellisense will show error if request does not implement ITestServiceRequest
+
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest(), TestCancellationToken);
+
             actual.Countries.Should().BeEquivalentTo(expected);
         }
 
@@ -136,7 +126,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
                 CurrentToken = new Condition { FieldName = nameof(Country.Alpha3Code), ConditionType = ConditionType.Unspecified, RightValue = "CYP" }
             };
 
-            Func<Task> act = async () => await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
+            Func<Task> act = async () => await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
 
             await act.Should().ThrowAsync<RemoteException>().WithMessage("Specified argument was out of the range of valid values. (Parameter 'Unspecified')");
         }
@@ -159,7 +149,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
                 }
             };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter }}, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter }}, TestCancellationToken);
             actual.Countries.Should().BeEquivalentTo(expected);
         }
 
@@ -177,7 +167,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
                 CurrentToken = new Condition { FieldName = nameof(Country.NominalGnp), ConditionType = ConditionType.Greater, RightValue = GNPValue }
             };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
             actual.Countries.Should().BeEquivalentTo(expected);
         }
 
@@ -195,7 +185,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
                 CurrentToken = new Condition { FieldName = nameof(Country.NominalGnp), ConditionType = ConditionType.Less, RightValue = GNPValue }
             };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
             actual.Countries.Should().BeEquivalentTo(expected);
         }
 
@@ -220,7 +210,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
                 }
             };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
             actual.Countries.Should().BeEquivalentTo(expected);
         }
 
@@ -237,7 +227,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
                 CurrentToken = new Condition { FieldName = nameof(Country.Created), ConditionType = ConditionType.Less, RightValue = DateTime.Now.AddDays(-5) }
             };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { Filter = filter } }, TestCancellationToken);
             actual.Countries.Should().BeEquivalentTo(expected);
         }
 
@@ -251,7 +241,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             var sortOptions = new SortOptions { new SortItem { FieldName = nameof(Country.NominalGnp) } };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
 
             actual.Countries.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }
@@ -266,7 +256,7 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             var sortOptions = new SortOptions { new SortItem { FieldName = nameof(Country.NominalGnp) }, new SortItem { FieldName = nameof(Country.Name) } };
 
-            var actual = await _testServiceClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
+            var actual = await _remoteCallClient.CallAsync(new CountryRequest { RequestOptions = new RequestOptions { SortOptions = sortOptions } }, TestCancellationToken);
             
             actual.Countries.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }
