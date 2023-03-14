@@ -13,6 +13,7 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Seedwork.DependencyInjection.Netcore" />
   </ItemGroup>
 
   <ItemGroup>

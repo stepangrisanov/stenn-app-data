@@ -1,17 +1,28 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using Seedwork.Configuration.Contracts;
+using Seedwork.DependencyInjection;
+using Seedwork.DependencyInjection.Netcore;
+using Seedwork.HttpClientHelpers;
+using Seedwork.Logging;
+using Seedwork.Network.Contracts.Rpc;
 using Seedwork.Network.Core.Abstractions;
+using Seedwork.Network.Infrastructure;
 using Seedwork.Network.Rpc;
 using Seedwork.Network.Rpc.Http;
-using Seedwork.Network.Rpc.Http.AspNet;
+using Seedwork.Web;
+using Serilog.Events;
 using Stenn.AppData.Contracts;
 using Stenn.AppData.Contracts.RequestOptions;
 using Stenn.TestModel.AppService.Client;
 using Stenn.TestModel.AppService.Contracts;
 using Stenn.TestModel.AppService.Contracts.Models;
+using Stenn.TestModel.AppService.IntegrationTests.Logging;
 using Stenn.TestModel.AppService.Web;
 using Stenn.TestModel.Domain.Tests.Entities;
 
@@ -28,6 +39,8 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         private readonly CancellationToken TestCancellationToken = CancellationToken.None;
 
         private readonly WebApplicationFactory<Program> _applicationFactory = new();
+
+        protected readonly ICollection<LogEvent> TestsLogAccumulator = new List<LogEvent>();
 
         protected IAppDataServiceClient<ITestServiceRequest, ITestServiceResponse> _testServiceClient { get; set; } = null!;
 
@@ -70,15 +83,22 @@ namespace Stenn.TestModel.AppService.IntegrationTests
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton(new EnvironmentConfig("RpcTests", "Test")); // add environment config
+            services.AddMockLogger(TestsLogAccumulator);
 
-            services.AddScoped(c => GetHttpClient());
-            services.AddSingleton<IHttpEndpointDiscoverer, TestHttpEndpointDiscoverer>();
-            services.AddAspNetRpcClient();
-
-            services.AddTestModelAppDataService();
+            services.AddSeedworkNetCoreDi();
 
             services.AddSingleton<IOperationContext>(new TestInitialOperationContext());
+
+            services.AddSingleton<IRequestResponseLoggerMiddlewareConfiguration, TestRequestResponseLoggerMiddlewareConfiguration>();
+
+            services.AddSingleton(new EnvironmentConfig("RpcTests", "Test")); // add environment config
+
+            services.AddRpcClient<CountryRequest, CountryResponse>(new Uri("http://localhost:5000"), AuthMode.None, null);
+
+            // only for integration testing. client factory which returns HttpClient configured to access app created using WebApplicationFactory
+            services.AddSingleton<IHttpClientFactory>(i => new HttpClientFactoryMock(GetHttpClient()));
+
+            services.AddTestModelAppDataService();
 
             return services;
         }

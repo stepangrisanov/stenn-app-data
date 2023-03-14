@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Seedwork.Configuration.Contracts;
+using Seedwork.DependencyInjection.Netcore;
+using Seedwork.Logging;
+using Seedwork.Network.Core.Abstractions;
 using Seedwork.Network.Rpc.Http.AspNet;
 using Stenn.TestModel.AppService.Server;
 using Stenn.TestModel.Domain.Tests;
-using Microsoft.Extensions.DependencyInjection;
-using Seedwork.DependencyInjection.Netcore;
-using Seedwork.Network.Core.Abstractions;
-using Seedwork.Logging;
 
 namespace Stenn.TestModel.AppService.Web
 {
@@ -64,6 +63,8 @@ namespace Stenn.TestModel.AppService.Web
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+
+            app.UseMiddleware<WebRequestOperationContextInjectorMiddleware>();
 
             app.UseAuthorization();
 

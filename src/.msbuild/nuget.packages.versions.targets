@@ -80,13 +80,16 @@
 
         <PackageReference Update="Newtonsoft.Json" Version="13.0.1" />
 
-        <PackageReference Update="Seedwork.Network.Rpc.Abstractions" Version="15.12.0-risks-3558-15.4" />
-        <PackageReference Update="Seedwork.Network.Rpc.Http" Version="15.12.0-risks-3558-15.4" />
-        <PackageReference Update="Seedwork.Network.Rpc.Http.AspNet" Version="15.12.0-risks-3558-15.4" />
-        <PackageReference Update="Seedwork.Network.Contracts" Version="15.12.0-risks-3558-15.4" />
+        <PackageReference Update="Seedwork.Network.Rpc.Abstractions" Version="15.12.0" />
+        <PackageReference Update="Seedwork.Network.Rpc.Http" Version="15.12.0" />
+        <PackageReference Update="Seedwork.Network.Rpc.Http.AspNet" Version="15.12.0" />
+        <PackageReference Update="Seedwork.Network.Contracts" Version="15.12.0" />
+        <PackageReference Update="Seedwork.DependencyInjection.Netcore" Version="15.11.8" />
         
         <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
         <PackageReference Update="Microsoft.AspNetCore.Mvc.Newtonsoftjson" Version="6.0.0" />
+
+        <PackageReference Update="Serilog.AspNetCore" Version="6.1.0" />
     </ItemGroup>
     
 </Project>
