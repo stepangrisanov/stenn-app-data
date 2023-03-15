@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project InitialTargets="CopyLocalProfileFiles">
+
+  <ItemGroup>
+    <LocalProfileProps Include="$(MSBuildThisFileDirectory)\local.profile.props"/>
+    <LocalProfileTargets Include="$(MSBuildThisFileDirectory)\local.profile.targets"/>
+  </ItemGroup>
+  
+  <Target Name="CopyLocalProfileFiles" BeforeTargets="Restore">
+    <CallTarget Targets="CopyLocalProfileProps"/>
+    <CallTarget Targets="CopyLocalProfileTargets"/>
+  </Target>
+
+  <Target Name="CopyLocalProfileProps" Condition="!Exists('$(WorkRootDir)\local.profile.props') and $(WorkRootDir)!=''">
+    <Copy SourceFiles="@(LocalProfileProps)" DestinationFolder="$(WorkRootDir)" />
+  </Target>
+
+  <Target Name="CopyLocalProfileTargets" Condition="!Exists('$(WorkRootDir)\local.profile.targets') and $(WorkRootDir)!=''">
+    <Copy SourceFiles="@(LocalProfileTargets)" DestinationFolder="$(WorkRootDir)" />
+  </Target>
+
+</Project>

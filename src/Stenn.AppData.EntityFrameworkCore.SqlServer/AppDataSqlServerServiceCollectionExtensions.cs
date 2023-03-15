@@ -7,6 +7,7 @@ using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData.EntityFrameworkCore.SqlServer
 {
+    [Obsolete]
     public static class AppDataSqlServerServiceCollectionExtensions
     {
         /// <summary>

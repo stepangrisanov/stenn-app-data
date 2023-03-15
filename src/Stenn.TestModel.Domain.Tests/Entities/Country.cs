@@ -22,6 +22,7 @@ namespace Stenn.TestModel.Domain.Tests.Entities
         /// <param name="alpha3Code"></param>
         /// <param name="numeric3Code"></param>
         /// <param name="nominalGnp"></param>
+        /// <param name="created"></param>
         public Country(string id, string name, string alpha3Code, string numeric3Code, decimal nominalGnp, DateTime created)
         {
             Id = id;

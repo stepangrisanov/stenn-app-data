@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup Condition="'$(WorkRootDir)'!=''">
+    <LocalProfilePropsFilePath Condition="'$(LocalProfileFilePath)'==''">$(WorkRootDir)local.profile.props</LocalProfilePropsFilePath>
+  </PropertyGroup>
+
+  <Import Condition="'$(LocalProfilePropsFilePath)'!='' And Exists('$(LocalProfilePropsFilePath)')" Project="$(LocalProfilePropsFilePath)"/>
+
+</Project>

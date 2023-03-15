@@ -4,6 +4,7 @@ using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData
 {
+    [Obsolete]
     public static class AppDataServiceCollectionExtensions
     {
         public static IServiceCollection AddAppDataService<TBaseEntity, TServiceContract, TServiceImplementation>(this IServiceCollection services,

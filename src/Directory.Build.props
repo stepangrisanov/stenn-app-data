@@ -8,5 +8,8 @@
   <Import Project="$(MSBuildThisFileDirectory).msbuild\version.props" />
   <Import Project="$(MSBuildThisFileDirectory).msbuild\build.props" />
   <Import Project="$(MSBuildThisFileDirectory).msbuild\tfm.constants.props" />
+  
+  <Import Project="$(MSBuildThisFileDirectory).msbuild\seedwork.props" />
+  <Import Project="$(MSBuildThisFileDirectory).msbuild\seedwork.restore\seedwork.restore.props" />
 
 </Project>

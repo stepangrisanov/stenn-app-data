@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup Condition="'$(RepositoryRootDir)'!=''">
+    <SeedworkDir Condition="'$(SeedworkDir)'==''">$(RepositoryRootDir)\..\seedwork\</SeedworkDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SeedworkDir)'!=''">
+    <SeedworkDirEndsWithSlash>$(SeedworkDir.EndsWith('\\'))</SeedworkDirEndsWithSlash>
+    <SeedworkDir Condition="'$(SeedworkDirEndsWithSlash)'=='False'">$(SeedworkDir)\</SeedworkDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+
+    <SeedworkAttach_PrintReferences Condition="'$(SeedworkAttach_PrintReferences)'==''">False</SeedworkAttach_PrintReferences>
+    <SeedworkAttach_PackageReferences Condition="'$(SeedworkAttach_PackageReferences)'==''">False</SeedworkAttach_PackageReferences>
+    <SeedworkAttach_PrintSeedworkPackageReference Condition="'$(SeedworkAttach_PrintSeedworkPackageReference)'==''">False</SeedworkAttach_PrintSeedworkPackageReference>
+    <AttachSeedwork Condition="'$(AttachSeedwork)'=='True' Or '$(AttachSeedwork)'=='true'">True</AttachSeedwork>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SeedworkPackageReference Include="@(PackageReference->HasMetadata('IsSeedworkPackage')->WithMetadataValue('IsSeedworkPackage','True'))"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(AttachSeedwork)'=='True'">
+    <ProjectReference Include="@(SeedworkPackageReference->'$(SeedworkDir)src\%(Identity)\%(Identity).csproj')"/>
+    <PackageReference Remove="@(SeedworkPackageReference->'%(Identity)')"/>
+  </ItemGroup>
+
+  <Target Name="SeedworkAttachValidation" BeforeTargets="ResolveAssemblyReferences;Build;CoreCompile">
+    <ItemGroup>
+      <ReferenceAssemblyFilename Include="@(Reference->'%(Filename)')"/>
+      <SeedworkPackageAsReference Include="@(ReferenceAssemblyFilename)" Condition="'@(ReferenceAssemblyFilename)'=='@(SeedworkPackageReference)' And %(Identity)!=''"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <AttachSeedworkWarningMessage>
+        ======================================================================================
+        = ATTENTION: Seedwork attached locally(ProjectReference instead of PackageReference) =
+        ======================================================================================
+      </AttachSeedworkWarningMessage>
+    </PropertyGroup>
+    <Message Condition="'$(AttachSeedwork)'=='True'" Text="$(AttachSeedworkWarningMessage)" Importance="high"/>
+
+    <Message Condition="'$(SeedworkAttach_PrintSeedworkPackageReference)'=='True'" Text="SeedworkPackageReference: %(SeedworkPackageReference.Identity)" Importance="high"/>
+    <Message Condition="'$(SeedworkAttach_PrintReferences)'=='True'" Text="Reference: '%(Reference.Identity)'" Importance="high"/>
+    <Message Condition="'$(SeedworkAttach_PrintPackageReferences)'=='True'" Text="PackageReference: '%(PackageReference.Identity)' IsSeedworkPackage: '%(PackageReference.IsSeedworkPackage)'" Importance="high"/>
+
+    <!--    Check that restore was run after change AttachSeedwork to True -->
+    <Error Condition="('$(AttachSeedwork)'=='True' Or '$(AttachSeedwork)'=='true') And '@(SeedworkPackageAsReference)'!=''"
+           Text="For using Seedwork as attached projects run restore or 'dotnet restore' in Terminal"
+           File="$(MSBuildProjectFullPath)"/>
+    <!--    Check that restore was run after change AttachSeedwork to False -->
+    <Error Condition="('$(AttachSeedwork)'!='True' And '$(AttachSeedwork)'!='true') And @(SeedworkPackageAsReference->Count())!=@(SeedworkPackageReference->Count()) And @(ReferenceAssemblyFilename->Count())!=0"
+           Text="For using Seedwork as packages run restore or 'dotnet restore' in Terminal"
+           File="$(MSBuildProjectFullPath)"/>
+  </Target>
+</Project>

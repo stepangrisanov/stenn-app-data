@@ -10,6 +10,7 @@ using Stenn.TestModel.Domain.AppService.Tests;
 using Stenn.TestModel.Domain.AppService.Tests.Entities;
 using Stenn.TestModel.Domain.Tests.Entities.Declarations;
 using Stenn.EntityFrameworkCore.Testing;
+using System;
 
 namespace Stenn.AppData.Tests
 {
@@ -17,6 +18,7 @@ namespace Stenn.AppData.Tests
     /// Tests sample for producer app service
     /// </summary>
     [TestFixture]
+    [Obsolete]
     public class AppDataTests
     {
 #if NET6_0

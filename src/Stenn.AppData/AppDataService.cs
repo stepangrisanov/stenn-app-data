@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData
 {
+    [Obsolete]
     public abstract class AppDataService<TBaseEntity> : IAppDataService<TBaseEntity>
         where TBaseEntity : class, IAppDataEntity
     {

@@ -8,7 +8,7 @@ namespace Stenn.AppData.Contracts.RequestOptions
 
     public class SortItem
     {
-        public string FieldName { get; set; }
+        public string FieldName { get; set; } = "";
         public SortDirection SortDirection { get; set; }
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData
 {
+    [Obsolete]
     public class AppDataService<TDbContext, TBaseEntity> : AppDataService<TBaseEntity>
         where TDbContext : DbContext
         where TBaseEntity : class, IAppDataEntity

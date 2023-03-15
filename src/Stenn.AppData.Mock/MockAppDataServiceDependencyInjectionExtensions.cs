@@ -7,6 +7,7 @@ using Stenn.AppData.EntityFrameworkCore;
 
 namespace Stenn.AppData.Mock
 {
+    [Obsolete]
     public static class MockAppDataServiceDependencyInjectionExtensions
     {
         /// <summary>

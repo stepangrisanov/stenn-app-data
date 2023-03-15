@@ -8,7 +8,7 @@ namespace Stenn.AppData.Contracts.RequestOptions
 {
     public class Filter
     {
-        public IToken CurrentToken { get; set; }
+        public IToken? CurrentToken { get; set; }
     }
 
     public interface IToken
@@ -17,26 +17,26 @@ namespace Stenn.AppData.Contracts.RequestOptions
 
     public class Condition : IToken
     {
-        public string FieldName { get; set; }
-        public object RightValue { get; set; }
+        public string FieldName { get; set; } = "";
+        public object RightValue { get; set; } = "";
         public ConditionType ConditionType { get; set; }
     }
 
     public class ContainsCondition : IToken
     {
-        public string FieldName { get; set; }
-        public object[] RightValue { get; set; }
+        public string FieldName { get; set; } = "";
+        public object[] RightValue { get; set; } = new object[0];
     }
 
     public class And : IToken
     {
-        public IToken First { get; set; }
-        public IToken Second { get; set; }
+        public IToken? First { get; set; }
+        public IToken? Second { get; set; }
     }
 
     public class Or : IToken{
-        public IToken First { get; set; }
-        public IToken Second { get; set; }
+        public IToken? First { get; set; }
+        public IToken? Second { get; set; }
     }
 
     public enum ConditionType

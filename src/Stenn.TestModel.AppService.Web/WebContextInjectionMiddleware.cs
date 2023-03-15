@@ -8,6 +8,9 @@ using Seedwork.Network.Core.Abstractions;
 using Seedwork.Web.Middleware;
 using Seedwork.Web;
 using Seedwork;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Stenn.TestModel.AppService.Web
 {

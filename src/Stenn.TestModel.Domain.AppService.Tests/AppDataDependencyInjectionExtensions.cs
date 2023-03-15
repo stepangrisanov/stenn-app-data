@@ -9,6 +9,7 @@ using Stenn.TestModel.Domain.AppService.Tests.Projections;
 
 namespace Stenn.TestModel.Domain.AppService.Tests
 {
+    [Obsolete]
     public static class TestModelAppDataDependencyInjectionExtensions
     {
         /// <summary>

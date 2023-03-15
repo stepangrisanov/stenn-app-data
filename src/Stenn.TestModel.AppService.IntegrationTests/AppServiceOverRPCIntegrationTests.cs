@@ -15,6 +15,10 @@ using Stenn.TestModel.AppService.Contracts.Models;
 using Stenn.TestModel.AppService.IntegrationTests.Logging;
 using Stenn.TestModel.AppService.Web;
 using Stenn.TestModel.Domain.Tests.Entities;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Stenn.TestModel.AppService.IntegrationTests
 {
@@ -83,7 +87,9 @@ namespace Stenn.TestModel.AppService.IntegrationTests
 
             services.AddSingleton(new EnvironmentConfig("RpcTests", "Test")); // add environment config
 
+#pragma warning disable CS0618 // Type or member is obsolete
             services.AddRpcClient<CountryRequest, CountryResponse>(new Uri("http://localhost:5000"), AuthMode.None, null);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // only for integration testing. client factory which returns HttpClient configured to access app created using WebApplicationFactory
             services.AddSingleton<IHttpClientFactory>(i => new HttpClientFactoryMock(GetHttpClient()));

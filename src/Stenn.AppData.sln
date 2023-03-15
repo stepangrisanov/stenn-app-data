@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".msbuild", ".msbuild", "{BA
 		.msbuild\package.props = .msbuild\package.props
 		.msbuild\product.props = .msbuild\product.props
 		.msbuild\repository.root.dir.props = .msbuild\repository.root.dir.props
+		.msbuild\seedwork.props = .msbuild\seedwork.props
 		.msbuild\tfm.constants.props = .msbuild\tfm.constants.props
 		.msbuild\version.props = .msbuild\version.props
 		.msbuild\work.root.dir.props = .msbuild\work.root.dir.props

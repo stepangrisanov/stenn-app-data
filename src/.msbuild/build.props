@@ -6,7 +6,7 @@
     <PackageOutputPath>$(MSBuildThisFileDirectory)..\..\bin\Packages</PackageOutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591;EF1001</NoWarn>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!--    Stenn MSBuild extensions-->

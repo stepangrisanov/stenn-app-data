@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <PropertyGroup>
+        <!--        Actual version of Seedwork packages. -->
+        <!--    IMPORTANT: run restore or 'dotnet restore - -interactive' in Terminal after change value bellow. See details in ReadMe.md -->
+        <!-- PLEASE REMOVE Seedwork version overrides from nuget.packages.versions before changing this next time-->
+        <SeedworkVersion>15.12.1</SeedworkVersion>
+
+        <!--    Path to Seedwork git repository-->
+        <!--    <SeedworkDir Condition="'$(SeedworkDir)'==''">$(MSBuildThisFileDirectory)..\..\..\..\..\..\seedwork</SeedworkDir>-->
+        <!--Set 'True' to attach to seedwork as project references instead of package references. -->
+        <!--    IMPORTANT: run restore or 'dotnet restore' in Terminal after change value bellow. See details in ReadMe.md -->
+        <!--    <AttachSeedwork Condition="$(Configuration)!='Release'">False</AttachSeedwork>-->
+    </PropertyGroup>
+
+</Project>

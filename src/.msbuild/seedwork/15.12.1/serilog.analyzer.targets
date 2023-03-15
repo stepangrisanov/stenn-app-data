@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+<!--    This file attach SerilogAnalizer if Serilog used by project-->
+    
+    <!-- Trick from here https://stackoverflow.com/questions/69731647/how-to-transform-include-attribute-value-of-packagereference-property-in-csproj -->
+    <SerilogFound>@(PackageReference->AnyHaveMetadataValue("Identity", "Serilog"))</SerilogFound>
+    <SerilogAnalyzerFound>@(PackageReference->AnyHaveMetadataValue("Identity", "SerilogAnalyzer"))</SerilogAnalyzerFound>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(SerilogFound)=='True' and $(SerilogAnalyzerFound)=='False'">
+    <PackageReference Include="SerilogAnalyzer" />
+  </ItemGroup>
+
+</Project>

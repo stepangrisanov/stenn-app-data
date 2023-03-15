@@ -9,6 +9,6 @@ namespace Stenn.TestModel.AppService.IntegrationTests.Logging
     {
         internal static LoggerConfiguration TestLogger(this LoggerSinkConfiguration configuration,
             ICollection<LogEvent> logAccumulator) =>
-            configuration?.Sink(new TestSink(logAccumulator));
+            configuration?.Sink(new TestSink(logAccumulator))!;
     }
 }

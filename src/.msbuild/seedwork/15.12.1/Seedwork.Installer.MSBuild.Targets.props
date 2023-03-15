@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+  <Import Condition="'$(IsTfmConstantsImported)'==''" Project="$(MSBuildThisFileDirectory)\tfm.constants.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)\global.nuget.packages.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)\repository.root.dir.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)\work.root.dir.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)\local.profile.import.props"/>
+
+</Project>

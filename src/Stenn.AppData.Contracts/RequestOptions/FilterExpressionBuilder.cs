@@ -11,7 +11,7 @@ namespace Stenn.AppData.Contracts.RequestOptions
         {
             if (filter == null) return (T) => true;
             var expressionParameter = Expression.Parameter(typeof(T));
-            var expression = Expression.Lambda<Func<T, bool>>(GetExpressionForToken(filter.CurrentToken, expressionParameter), expressionParameter);
+            var expression = Expression.Lambda<Func<T, bool>>(GetExpressionForToken(filter.CurrentToken!, expressionParameter), expressionParameter);
             return expression;
         }
 
@@ -71,12 +71,12 @@ namespace Stenn.AppData.Contracts.RequestOptions
 
         private Expression VisitOr(Or requestOr, ParameterExpression expressionParameter)
         {
-            return Expression.Or(GetExpressionForToken(requestOr.First, expressionParameter), GetExpressionForToken(requestOr.Second, expressionParameter));
+            return Expression.Or(GetExpressionForToken(requestOr.First!, expressionParameter), GetExpressionForToken(requestOr.Second!, expressionParameter));
         }
 
         private Expression VisitAnd(And requestAnd, ParameterExpression expressionParameter)
         {
-            return Expression.And(GetExpressionForToken(requestAnd.First, expressionParameter), GetExpressionForToken(requestAnd.Second, expressionParameter));
+            return Expression.And(GetExpressionForToken(requestAnd.First!, expressionParameter), GetExpressionForToken(requestAnd.Second!, expressionParameter));
         }
     }
 }

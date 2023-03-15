@@ -1,0 +1,27 @@
+<Project>
+
+  <PropertyGroup>
+    <NuGetPackageRootForSW>$(NuGetPackageRoot)</NuGetPackageRootForSW>
+    <NuGetPackageRootForSW Condition=" '$(NuGetPackageRootForSW)' == '' And $([MSBuild]::IsOSPlatform('Linux')) ">$(HOME)\.nuget\packages\</NuGetPackageRootForSW>
+    <NuGetPackageRootForSW Condition=" '$(NuGetPackageRootForSW)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRootForSW>
+    <SeedworkMSBuildPackagesNugetDir>$(NuGetPackageRootForSW)seedwork.installer.msbuild.targets\$(SeedworkVersion)\build\</SeedworkMSBuildPackagesNugetDir>
+
+    <!--    Two options:
+         1. Copy locally all Seedwork.MSBuild.Packages files and store it in git repo. SeedworkMSBuildPackagesCopyLocally = True
+         2. Use Seedwork.MSBuild.Packages files from global nuget cache. SeedworkMSBuildPackagesCopyLocally = False
+    -->
+    <SeedworkMSBuildPackagesCopyLocally Condition="'$(SeedworkMSBuildPackagesCopyLocally)'==''">True</SeedworkMSBuildPackagesCopyLocally>
+    <SeedworkMSBuildPackagesCopyLocally Condition="'$(SeedworkMSBuildPackagesCopyLocally)'=='true'">True</SeedworkMSBuildPackagesCopyLocally>
+
+    <SeedworkMSBuildPackagesDir Condition="'$(SeedworkMSBuildPackagesCopyLocally)'!='True'">$(SeedworkMSBuildPackagesNugetDir)</SeedworkMSBuildPackagesDir>
+
+    <SeedworkMSBuildPackagesCommonDir Condition="'$(SeedworkMSBuildPackagesCopyLocally)'=='True'">$(MSBuildThisFileDirectory)..\seedwork\</SeedworkMSBuildPackagesCommonDir>
+    <SeedworkMSBuildPackagesDir Condition="'$(SeedworkMSBuildPackagesCopyLocally)'=='True'">$(SeedworkMSBuildPackagesCommonDir)$(SeedworkVersion)\</SeedworkMSBuildPackagesDir>
+
+
+    <SeedworkMSBuildPackagesProps>$(SeedworkMSBuildPackagesDir)Seedwork.Installer.MSBuild.Targets.props</SeedworkMSBuildPackagesProps>
+  </PropertyGroup>
+
+  <Import Condition="Exists('$(SeedworkMSBuildPackagesProps)')" Project="$(SeedworkMSBuildPackagesProps)"/>
+
+</Project>

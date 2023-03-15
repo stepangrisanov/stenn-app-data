@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  
+  <PropertyGroup>
+    <IsTfmConstantsImported>true</IsTfmConstantsImported>
+    
+    <IsNETFRAMEWORK Condition="'$(TargetFramework)'=='net48'">True</IsNETFRAMEWORK>
+    
+    <IsNETSTANDARD20 Condition="'$(TargetFramework)'=='netstandard2.0'">True</IsNETSTANDARD20>
+    <IsNETSTANDARD21 Condition="'$(TargetFramework)'=='netstandard2.1'">True</IsNETSTANDARD21>
+    <IsNETSTANDARD Condition="'$(IsNETSTANDARD20)'=='True' OR '$(IsNETSTANDARD21)'=='True'">True</IsNETSTANDARD>
+
+    <IsNETFRAMEWORK_OR_STANDARD Condition="'$(IsNETFRAMEWORK)'=='True' OR '$(IsNETSTANDARD)'=='True'">True</IsNETFRAMEWORK_OR_STANDARD>    
+
+    <IsNET5 Condition="'$(TargetFramework)'=='net5.0'">True</IsNET5>
+    <IsNET6 Condition="'$(TargetFramework)'=='net6.0'">True</IsNET6>
+    <IsNET7 Condition="'$(TargetFramework)'=='net7.0'">True</IsNET7>
+    <IsNET7_OR_GREATER Condition="'$(IsNET7)'=='True'">True</IsNET7_OR_GREATER>
+    <IsNET6_OR_GREATER Condition="'$(IsNET6)'=='True' OR '$(IsNET7_OR_GREATER)'=='True'">True</IsNET6_OR_GREATER>
+    <IsNET5_OR_GREATER Condition="'$(IsNET5)'=='True' OR '$(IsNET6_OR_GREATER)'=='True'">True</IsNET5_OR_GREATER>
+  </PropertyGroup>
+
+</Project>

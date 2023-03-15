@@ -5,6 +5,7 @@ using Stenn.AppData.Contracts;
 
 namespace Stenn.AppData.EntityFrameworkCore
 {
+    [Obsolete]
     public static class AppDataServiceCollectionExtensions
     {
         /// <summary>

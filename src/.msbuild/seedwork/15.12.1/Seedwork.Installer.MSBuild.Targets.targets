@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)\local.profile.import.targets"/>
+
+  <Import Project="$(MSBuildThisFileDirectory)\local.profile.defaults.copy.targets"/>
+
+  <PropertyGroup>
+    <!-- Import seedwork packages' versions as nuget single props file or not-->
+    <EnableExtension_SeedworkVersions Condition="'$(EnableExtension_SeedworkVersions)'==''">true</EnableExtension_SeedworkVersions>
+    <!-- Import seedwork's depends packages' versions as nuget single props file or not-->
+    <EnableExtension_SeedworkDepsVersions Condition="'$(EnableExtension_SeedworkDepsVersions)'==''">true</EnableExtension_SeedworkDepsVersions>
+    <!--      Enable serilog analyzer in projects with Serilog-->
+    <EnableExtension_SerilogAnalyzer Condition="'$(EnableExtension_SerilogAnalyzer)'==''">true</EnableExtension_SerilogAnalyzer>
+  </PropertyGroup>
+
+  <Import Condition="'$(EnableExtension_SerilogAnalyzer)'=='True' Or '$(EnableExtension_SerilogAnalyzer)'=='true'"
+          Project="$(MSBuildThisFileDirectory)serilog.analyzer.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)global.nuget.packages.targets" />
+
+  <Import Condition="'$(EnableExtension_SeedworkVersions)'=='True' Or '$(EnableExtension_SeedworkVersions)'=='true'"
+          Project="$(MSBuildThisFileDirectory)seedwork.nuget.packages.versions.targets" />
+
+  <Import Condition="'$(Configuration)'=='Debug' And ('$(EnableExtension_SeedworkVersions)'=='True' Or '$(EnableExtension_SeedworkVersions)'=='true')"
+          Project="$(MSBuildThisFileDirectory)seedwork.attach.locally.targets" />
+
+  <Import Condition="'$(EnableExtension_SeedworkDepsVersions)'=='True' Or '$(EnableExtension_SeedworkDepsVersions)'=='true'"
+          Project="$(MSBuildThisFileDirectory)deps.nuget.packages.versions.targets" />
+
+</Project>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project InitialTargets="RestoreSeedwork">
+
+  <PropertyGroup>
+    <SeedworkMSBuildPackagesTargets>$(SeedworkMSBuildPackagesDir)Seedwork.Installer.MSBuild.Targets.targets</SeedworkMSBuildPackagesTargets>
+    <RunRestoreSeedworkMSBuildPackages>True</RunRestoreSeedworkMSBuildPackages>
+    <RunRestoreSeedworkMSBuildPackages Condition="Exists('$(SeedworkMSBuildPackagesTargets)')">False</RunRestoreSeedworkMSBuildPackages>
+
+    <IsActiveProject Condition="'$(SeedworkRestoreActiveProjectName)'=='' Or '$(MSBuildProjectName)'=='$(SeedworkRestoreActiveProjectName)'">True</IsActiveProject>
+    <IsActiveProject Condition="'$(SeedworkRestoreActiveProjectTargetFramework)'!='' And '$(SeedworkRestoreActiveProjectTargetFramework)'!='$(TargetFramework)'">False</IsActiveProject>
+
+    <!--    <SeedworkMSBuildPackagesDirs Condition="'$(SeedworkMSBuildPackagesCommonDir)'!='' And Exists('$(SeedworkMSBuildPackagesCommonDir)')">$([System.IO.Directory]::EnumerateDirectories('$(SeedworkMSBuildPackagesCommonDir)'))</SeedworkMSBuildPackagesDirs>-->
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(SeedworkMSBuildPackagesCommonDir)'!='' And Exists('$(SeedworkMSBuildPackagesCommonDir)')">
+    <SeedworkMSBuildPackagesDir Include="$([System.IO.Directory]::GetDirectories(&quot;$(SeedworkMSBuildPackagesCommonDir)&quot;))" />
+    <SeedworkMSBuildPackagesDir Remove="$(SeedworkMSBuildPackagesCommonDir)$(SeedworkVersion)" />
+  </ItemGroup>
+
+  <Target Condition="'@(SeedworkMSBuildPackagesDir)'!=''"
+          Name="CleanupSeedworkDir"
+          BeforeTargets="ResolvePackageAssets;ResolveAssemblyReferences;Restore;Build;Clean;CoreCompile;RestoreSeedwork">
+
+    <Message Text="SW Legacy removed directories:'@(SeedworkMSBuildPackagesDir)'" Importance="high" />
+
+    <RemoveDir Directories="@(SeedworkMSBuildPackagesDir)" />
+
+  </Target>
+
+  <Target Condition="'$(RunRestoreSeedworkMSBuildPackages)'=='True'"
+          Name="RestoreSeedwork"
+          BeforeTargets="ResolvePackageAssets;ResolveAssemblyReferences;Restore;Build;CoreCompile">
+
+    <Error Condition="'$(SeedworkVersion)'==''" Text="The property SeedworkVersion is empty" File="$(MSBuildProjectFullPath)" />
+
+    <PropertyGroup>
+      <RunRestoreSeedworkMSBuildPackages Condition="Exists('$(SeedworkMSBuildPackagesTargets)')">False</RunRestoreSeedworkMSBuildPackages>
+    </PropertyGroup>
+
+    <Message Text="RunRestoreSeedworkMSBuildPackages:'$(RunRestoreSeedworkMSBuildPackages)', SeedworkMSBuildPackagesTargets:'$(SeedworkMSBuildPackagesTargets)'" Importance="high" />
+
+    <Exec Condition="'$(IsActiveProject)'=='True' And '$(RunRestoreSeedworkMSBuildPackages)'=='True'" Command="dotnet restore seedwork.restore.csproj  -f --no-cache --interactive -p:SeedworkVersion=$(SeedworkVersion)"
+          ConsoleToMSBuild="true"
+          WorkingDirectory="$(MSBuildThisFileDirectory)"
+          CustomErrorRegularExpression=": error " />
+
+    <ItemGroup Condition="'$(SeedworkMSBuildPackagesCopyLocally)'=='True'">
+      <FilesIn Include="$(SeedworkMSBuildPackagesNugetDir)**\*.*" />
+      <Files Include="%(FilesIn.Identity)">
+        <ResultPath>@(FilesIn->'$(SeedworkMSBuildPackagesDir)\%(RecursiveDir)%(Filename)%(Extension)')</ResultPath>
+      </Files>
+    </ItemGroup>
+    <Copy Condition="'$(SeedworkMSBuildPackagesCopyLocally)'=='True'" SourceFiles="@(Files)" DestinationFiles="@(Files->'%(ResultPath)')" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false" />
+
+    <Error Condition="'$(RunRestoreSeedworkMSBuildPackages)'=='True'" Text="Package 'Seedwork.MSBuild.Packages.$(SeedworkVersion)' with Seedwork packages' versions restored. Run build again"
+           File="$(MSBuildProjectFullPath)" />
+  </Target>
+
+  <Import Condition="Exists('$(SeedworkMSBuildPackagesTargets)')" Project="$(SeedworkMSBuildPackagesTargets)" />
+
+</Project>

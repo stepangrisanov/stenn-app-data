@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <!--Set 'True' to attach to seedwork as project references instead of package references. -->
+    <!--    IMPORTANT: run restore or 'dotnet restore' in Terminal after change value bellow. See details in ReadMe.md -->
+    <AttachSeedwork Condition="$(Configuration)!='Release'">False</AttachSeedwork>
+    <SeedworkDir>$(MSBuildThisFileDirectory)seedwork</SeedworkDir>
+
+  </PropertyGroup>
+
+</Project>

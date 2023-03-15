@@ -15,8 +15,10 @@ namespace Stenn.AppData.Tests
     /// Tests sample for consumer app service
     /// </summary>
     [TestFixture]
+    [Obsolete]
     internal class AppDataMockTests
     {
+        
         private ITestModelDataService AppDataService { get; set; }
         private IServiceProvider ServiceProvider { get; set; }
 
